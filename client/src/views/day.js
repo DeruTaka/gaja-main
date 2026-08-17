@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { CAT, catColor } from '../categories.js';
+import { CAT, catColor, DOW, MON } from '../categories.js';
 import { clock, dur, t2m, m2t, esc, TODAY, daysBetween } from '../utils.js';
 import { buildDay, getMark, studyMap, studyProgress } from '../engine.js';
 import { navbar, PPM } from './paint.js';
@@ -39,8 +39,6 @@ export function dayView(d) {
     const nn = n < win.start ? n + 1440 : n;
     if (nn >= win.start && nn <= win.end) now = `<div class="nowline" id="nowline" style="top:${(nn - win.start) * ppm}px"><b>NOW</b></div>`;
   }
-  const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
   return navbar(`${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`,
     `${dur(day.busy)} committed · ${dur(Math.max(0, day.free))} open`)
   + `<div class="dayGrid">
