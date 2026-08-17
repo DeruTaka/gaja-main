@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1B1D21">
+<meta name="description" content="Gaja plans your whole life on one page.">
+<title>Gaja — your life, scheduled</title>
+<link rel="manifest" href='data:application/manifest+json,{"name":"Gaja","short_name":"Gaja","start_url":".","display":"standalone","background_color":"%231B1D21","theme_color":"%231B1D21"}'>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1B1D21; --panel:#24272C; --panel-2:#2A2E34; --grat:#30343A; --grat-soft:#282C31;
+  --chalk:#ECEFF3; --graphite:#939BA5; --graphite-dim:#6B727B;
+  --cyan:#35D6E7; --lime:#C8E85B; --red:#F0645F;
+  --work:#5AA9F5; --class:#A98BFA; --assessment:#F472B6; --tournament:#FB923C;
+  --health:#3FD9A0; --meal:#F5C24C; --habit:#35D6E7; --hobby:#C084FC;
+  --special:#F0645F; --travel:#7E8792; --sleep:#5A616B;
+  --r:10px; --gut:64px;
+  --display:'Space Grotesk',system-ui,sans-serif;
+  --body:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background-color:var(--ink);
+  background-image:
+    linear-gradient(var(--grat-soft) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grat-soft) 1px,transparent 1px);
+  background-size:26px 26px;
+  color:var(--chalk); font-family:var(--body); font-size:15px; line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit;color:inherit}
+button{background:none;border:none;cursor:pointer}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px;border-radius:4px}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.hide{display:none !important}
+
+/* ---------- shell ---------- */
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+header.top{position:sticky;top:0;z-index:40;background:rgba(27,29,33,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--grat)}
+.topbar{display:flex;align-items:center;gap:16px;height:62px}
+.brand{font-family:var(--display);font-weight:700;font-size:21px;letter-spacing:-.02em;display:flex;align-items:center;gap:9px}
+.brand i{width:11px;height:11px;background:var(--cyan);display:block;border-radius:2px;box-shadow:0 0 0 4px rgba(53,214,231,.14)}
+.brand small{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--graphite-dim);letter-spacing:.14em;text-transform:uppercase;padding-top:3px}
+.spacer{flex:1}
+.seg{display:flex;border:1px solid var(--grat);border-radius:8px;overflow:hidden}
+.seg button{padding:6px 14px;font-size:13px;color:var(--graphite);font-family:var(--mono);letter-spacing:.04em}
+.seg button+button{border-left:1px solid var(--grat)}
+.seg button[aria-pressed="true"]{background:var(--cyan);color:#0F1113;font-weight:600}
+.iconbtn{width:34px;height:34px;border:1px solid var(--grat);border-radius:8px;display:grid;place-items:center;color:var(--graphite)}
+.iconbtn:hover{color:var(--chalk);border-color:var(--graphite-dim)}
+.btn{padding:8px 15px;border-radius:8px;border:1px solid var(--grat);font-size:14px;font-weight:500;color:var(--chalk);white-space:nowrap}
+.btn:hover{border-color:var(--graphite-dim);background:var(--panel)}
+.btn.primary{background:var(--cyan);color:#0F1113;border-color:var(--cyan);font-weight:600}
+.btn.primary:hover{background:#5CE3F1;border-color:#5CE3F1}
+.btn.ghost{border-color:transparent;color:var(--graphite)}
+.btn.ghost:hover{color:var(--chalk)}
+.btn.danger{color:var(--red);border-color:rgba(240,100,95,.35)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.datebar{display:flex;align-items:center;gap:10px;padding:14px 0 6px}
+.datebar h2{font-family:var(--display);font-size:26px;font-weight:500;letter-spacing:-.02em}
+.datebar .sub{font-family:var(--mono);font-size:12px;color:var(--graphite-dim);letter-spacing:.08em;text-transform:uppercase}
+
+/* ---------- onboarding ---------- */
+.ob{min-height:100dvh;display:flex;flex-direction:column}
+.ob-head{border-bottom:1px solid var(--grat);background:rgba(27,29,33,.92);position:sticky;top:0;z-index:20}
+.ob-head .wrap{display:flex;align-items:center;gap:14px;height:62px}
+.rail{display:flex;gap:3px;flex:1;max-width:420px}
+.rail i{flex:1;height:3px;background:var(--grat);border-radius:2px}
+.rail i.on{background:var(--cyan)}
+.rail i.past{background:rgba(53,214,231,.35)}
+.ob-body{flex:1;padding:38px 0 130px}
+.ob-body .wrap{max-width:720px}
+.step-no{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--cyan);text-transform:uppercase}
+.ob h1{font-family:var(--display);font-size:36px;font-weight:500;letter-spacing:-.03em;margin:10px 0 8px;line-height:1.12}
+.ob .lede{color:var(--graphite);max-width:56ch;margin-bottom:28px}
+.ob-foot{position:fixed;bottom:0;left:0;right:0;background:rgba(27,29,33,.94);backdrop-filter:blur(10px);border-top:1px solid var(--grat);padding:14px 0;z-index:30}
+.ob-foot .wrap{max-width:720px;display:flex;align-items:center;gap:12px}
+
+/* hero */
+.hero{text-align:left;padding:6vh 0 0}
+.hero h1{font-size:clamp(42px,7vw,74px);line-height:.98;margin:18px 0 18px}
+.hero .mark{background:linear-gradient(transparent 58%,rgba(200,232,91,.32) 58%,rgba(200,232,91,.32) 94%,transparent 94%);padding:0 .1em}
+.hero p{font-size:17px;color:var(--graphite);max-width:52ch}
+.hero-list{margin:30px 0 6px;border-top:1px solid var(--grat)}
+.hero-list div{display:flex;gap:14px;padding:11px 0;border-bottom:1px solid var(--grat);align-items:baseline}
+.hero-list span:first-child{font-family:var(--mono);font-size:11px;color:var(--cyan);width:34px;flex:none}
+.hero-list span:last-child{color:var(--graphite)}
+
+/* ---------- fields ---------- */
+.field{margin-bottom:18px}
+.field>label,.flabel{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--graphite);margin-bottom:7px}
+.hint{font-size:13px;color:var(--graphite-dim);margin-top:6px}
+input[type=text],input[type=time],input[type=date],input[type=number],select,textarea{
+  width:100%;background:var(--panel);border:1px solid var(--grat);border-radius:var(--r);
+  padding:10px 12px;color:var(--chalk);font-family:var(--mono);font-size:14px;
+}
+input:hover,select:hover{border-color:var(--graphite-dim)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan)}
+input[type=time],input[type=date]{color-scheme:dark}
+.row{display:flex;gap:12px;flex-wrap:wrap}
+.row>*{flex:1;min-width:150px}
+.days{display:flex;gap:6px;flex-wrap:wrap}
+.days button{width:42px;height:38px;border:1px solid var(--grat);border-radius:8px;font-family:var(--mono);font-size:12px;color:var(--graphite)}
+.days button[aria-pressed="true"]{background:var(--cyan);border-color:var(--cyan);color:#0F1113;font-weight:600}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:7px 14px;border:1px solid var(--grat);border-radius:999px;font-size:13px;color:var(--graphite)}
+.chip[aria-pressed="true"]{border-color:var(--cyan);color:var(--cyan);background:rgba(53,214,231,.08)}
+.check{display:flex;gap:10px;align-items:flex-start;cursor:pointer;padding:9px 0}
+.check input{width:17px;height:17px;accent-color:var(--cyan);flex:none;margin-top:2px}
+.pri{display:flex;gap:6px}
+.pri button{flex:1;border:1px solid var(--grat);border-radius:8px;padding:8px 4px;text-align:center}
+.pri button b{display:block;font-family:var(--mono);font-size:15px}
+.pri button small{display:block;font-size:10px;color:var(--graphite-dim);letter-spacing:.06em;text-transform:uppercase}
+.pri button[aria-pressed="true"]{border-color:var(--lime);background:rgba(200,232,91,.09)}
+.pri button[aria-pressed="true"] b{color:var(--lime)}
+
+/* entry cards */
+.entries{display:flex;flex-direction:column;gap:12px;margin-bottom:16px}
+.entry{border:1px solid var(--grat);border-radius:12px;background:var(--panel);overflow:hidden}
+.entry-head{display:flex;align-items:center;gap:11px;padding:13px 15px;cursor:pointer}
+.entry-head .ico{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-size:15px;flex:none;background:var(--panel-2)}
+.entry-head b{font-weight:600;font-size:14.5px}
+.entry-head .meta{font-family:var(--mono);font-size:11.5px;color:var(--graphite-dim);margin-top:1px}
+.entry-body{padding:2px 15px 16px;border-top:1px solid var(--grat)}
+.entry-body.collapsed{display:none}
+.addbtn{width:100%;border:1px dashed var(--grat);border-radius:12px;padding:14px;color:var(--graphite);font-size:14px}
+.addbtn:hover{border-color:var(--cyan);color:var(--cyan)}
+.empty{border:1px dashed var(--grat);border-radius:12px;padding:22px;text-align:center;color:var(--graphite-dim);font-size:14px;margin-bottom:14px}
+
+/* ---------- day view: the time ruler ---------- */
+.dayGrid{display:grid;grid-template-columns:1fr 300px;gap:26px;align-items:start;padding-bottom:70px}
+@media(max-width:900px){.dayGrid{grid-template-columns:1fr}}
+.ruler{position:relative;display:grid;grid-template-columns:var(--gut) 1fr;
+  border:1px solid var(--grat);border-radius:14px;background:var(--panel);overflow:hidden}
+.gutter{position:relative;border-right:1px solid var(--grat);background:linear-gradient(90deg,transparent,rgba(0,0,0,.14))}
+.tick{position:absolute;right:11px;font-family:var(--mono);font-size:10.5px;color:var(--graphite-dim);letter-spacing:.06em;transform:translateY(-50%)}
+.track{position:relative;background-image:linear-gradient(90deg,var(--grat-soft) 1px,transparent 1px);background-size:26px 26px}
+.hline{position:absolute;left:0;right:0;height:1px;background:var(--grat-soft)}
+.hline.half{background:transparent;border-top:1px dotted rgba(48,52,58,.7)}
+.ev{position:absolute;left:9px;right:11px;border-radius:9px;padding:7px 11px;overflow:hidden;
+  border:1px solid var(--c);border-left:4px solid var(--c);
+  background:color-mix(in srgb,var(--c) 15%,var(--panel-2));cursor:pointer;
+  transition:opacity .22s ease,transform .12s ease;display:flex;gap:9px;align-items:flex-start}
+.ev:hover{transform:translateX(2px)}
+.ev .etitle{font-weight:600;font-size:13.5px;line-height:1.25;letter-spacing:-.005em}
+.ev .etime{font-family:var(--mono);font-size:11px;color:var(--graphite);margin-top:2px}
+.ev .eico{font-size:14px;line-height:1.2;flex:none}
+.ev .ebody{flex:1;min-width:0}
+.ev .etitle,.ev .etime{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev.short{padding:4px 11px;align-items:center}
+.ev.short .ebody{display:flex;gap:8px;align-items:baseline}
+.ev.short .etime{margin:0}
+.ev .edit{position:absolute;top:0;right:0;bottom:0;width:26px;display:grid;place-items:center;
+  color:var(--graphite-dim);border-left:1px solid rgba(255,255,255,.06);opacity:0;transition:opacity .15s}
+.ev:hover .edit,.ev:focus-within .edit{opacity:1}
+.ev .edit:hover{color:var(--chalk);background:rgba(255,255,255,.05)}
+/* highlighter swipe on done */
+.ev.done{opacity:.34}
+.ev.done .etitle{text-decoration:line-through;text-decoration-color:var(--lime);text-decoration-thickness:2px}
+.ev::after{content:"";position:absolute;inset:0;background:rgba(200,232,91,.42);
+  transform:scaleX(0);transform-origin:left;pointer-events:none}
+.ev.swipe::after{animation:swipe .5s ease-out forwards}
+@keyframes swipe{0%{transform:scaleX(0)}45%{transform:scaleX(1);transform-origin:left}
+  55%{transform:scaleX(1);transform-origin:right}100%{transform:scaleX(0);transform-origin:right}}
+@media(prefers-reduced-motion:reduce){.ev.swipe::after{animation:none}.ev:hover{transform:none}}
+.nowline{position:absolute;left:0;right:0;height:0;border-top:1.5px solid var(--lime);z-index:5;pointer-events:none}
+.nowline b{position:absolute;left:-58px;top:-8px;font-family:var(--mono);font-size:10px;color:#0F1113;
+  background:var(--lime);padding:1px 5px;border-radius:3px;font-weight:600}
+.asleep{position:absolute;left:0;right:0;background:repeating-linear-gradient(45deg,rgba(90,97,107,.10) 0 6px,transparent 6px 12px);pointer-events:none}
+
+/* side panel */
+.side{display:flex;flex-direction:column;gap:16px;position:sticky;top:78px}
+.card{border:1px solid var(--grat);border-radius:14px;background:var(--panel);padding:15px 16px}
+.card h3{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--graphite);
+  margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.card h3 em{font-style:normal;margin-left:auto;color:var(--graphite-dim)}
+.stat{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--grat-soft);font-size:13.5px}
+.stat:last-child{border:0}
+.stat b{font-family:var(--mono);font-weight:500}
+.bar{height:5px;background:var(--grat);border-radius:3px;overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;background:var(--c,var(--cyan));border-radius:3px}
+.note{border-left:2px solid var(--lime);padding:2px 0 2px 11px;margin-bottom:11px;font-size:13.5px;color:var(--graphite)}
+.note b{color:var(--chalk);font-weight:600;display:block;font-size:13.5px}
+.note.warn{border-color:var(--red)}
+.note .act{margin-top:6px;display:flex;gap:8px}
+.note .act button{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--cyan);border:1px solid rgba(53,214,231,.3);border-radius:6px;padding:4px 9px}
+.note .act button:hover{background:rgba(53,214,231,.1)}
+.legend{display:flex;flex-wrap:wrap;gap:9px}
+.legend span{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--graphite)}
+.legend i{width:9px;height:9px;border-radius:2px;background:var(--c)}
+
+/* ---------- month ---------- */
+.mgrid{border:1px solid var(--grat);border-radius:14px;overflow:hidden;background:var(--panel);margin-bottom:70px}
+.mhead,.mrow{display:grid;grid-template-columns:repeat(7,1fr)}
+.mhead div{padding:9px 10px;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--graphite-dim);
+  text-transform:uppercase;border-bottom:1px solid var(--grat);text-align:center}
+.mcell{min-height:112px;border-right:1px solid var(--grat-soft);border-bottom:1px solid var(--grat-soft);
+  padding:7px 8px;cursor:pointer;position:relative;text-align:left}
+.mcell:nth-child(7n){border-right:0}
+.mcell:hover{background:var(--panel-2)}
+.mcell .dn{font-family:var(--mono);font-size:12px;color:var(--graphite)}
+.mcell.out{opacity:.34}
+.mcell.today .dn{background:var(--lime);color:#0F1113;border-radius:5px;padding:1px 6px;font-weight:600}
+.mcell.sel{box-shadow:inset 0 0 0 1.5px var(--cyan)}
+.mchip{display:flex;align-items:center;gap:5px;margin-top:4px;font-size:11.5px;color:var(--chalk);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mchip i{width:6px;height:6px;border-radius:2px;background:var(--c);flex:none}
+.mmore{font-family:var(--mono);font-size:10.5px;color:var(--graphite-dim);margin-top:3px}
+@media(max-width:700px){.mcell{min-height:76px;padding:5px}.mchip{font-size:0;gap:3px}.mchip i{width:7px;height:7px}
+  .mchip{display:inline-flex;margin-right:2px}.mmore{display:none}}
+
+/* ---------- year ---------- */
+.ygrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:70px}
+@media(max-width:860px){.ygrid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.ygrid{grid-template-columns:1fr}}
+.ym{border:1px solid var(--grat);border-radius:12px;background:var(--panel);padding:13px;cursor:pointer;text-align:left}
+.ym:hover{border-color:var(--graphite-dim)}
+.ym h4{font-family:var(--display);font-size:15px;font-weight:500;margin-bottom:9px;display:flex;justify-content:space-between;align-items:baseline}
+.ym h4 span{font-family:var(--mono);font-size:10px;color:var(--graphite-dim);letter-spacing:.08em}
+.ycells{display:grid;grid-template-columns:repeat(7,1fr);gap:3px}
+.yc{aspect-ratio:1;border-radius:3px;background:var(--grat-soft);font-family:var(--mono);font-size:9px;
+  display:grid;place-items:center;color:var(--graphite-dim);position:relative}
+.yc.out{opacity:0}
+.yc.today{outline:1.5px solid var(--lime)}
+.yc.mark{background:var(--c);color:#14161a;font-weight:600}
+
+/* ---------- modal ---------- */
+.scrim{position:fixed;inset:0;background:rgba(12,13,15,.68);backdrop-filter:blur(3px);z-index:60;
+  display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px;overflow:auto}
+.modal{background:var(--ink);border:1px solid var(--grat);border-radius:16px;width:100%;max-width:520px;
+  box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.modal-h{display:flex;align-items:center;gap:12px;padding:17px 20px;border-bottom:1px solid var(--grat)}
+.modal-h h3{font-family:var(--display);font-size:19px;font-weight:500;letter-spacing:-.02em;flex:1}
+.modal-b{padding:18px 20px;max-height:64vh;overflow:auto}
+.modal-f{display:flex;gap:10px;padding:15px 20px;border-top:1px solid var(--grat);align-items:center}
+.pick{width:100%;text-align:left;border:1px solid var(--grat);border-radius:12px;padding:14px 15px;margin-bottom:10px}
+.pick:hover{border-color:var(--cyan);background:var(--panel)}
+.pick b{display:block;font-size:14.5px;margin-bottom:2px}
+.pick small{color:var(--graphite);font-size:13px}
+.catgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px}
+.catgrid button{border:1px solid var(--grat);border-radius:11px;padding:13px 11px;text-align:left;display:flex;gap:9px;align-items:center}
+.catgrid button:hover,.catgrid button[aria-pressed="true"]{border-color:var(--c);background:color-mix(in srgb,var(--c) 11%,transparent)}
+.catgrid button span{font-size:17px}
+.catgrid button b{font-size:13.5px;font-weight:500}
+.err{border:1px solid rgba(240,100,95,.4);background:rgba(240,100,95,.09);border-radius:10px;padding:11px 13px;
+  font-size:13.5px;color:#FFB4B1;margin-bottom:14px}
+.err b{display:block;color:var(--red);font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--panel-2);
+  border:1px solid var(--grat);border-radius:10px;padding:11px 17px;font-size:14px;z-index:80;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);animation:rise .25s ease}
+@keyframes rise{from{opacity:0;transform:translate(-50%,10px)}}
+.fab{position:fixed;right:22px;bottom:22px;z-index:35;width:54px;height:54px;border-radius:16px;background:var(--cyan);
+  color:#0F1113;font-size:26px;display:grid;place-items:center;box-shadow:0 10px 26px rgba(53,214,231,.28)}
+@media(min-width:901px){.fab{display:none}}
+@media(max-width:600px){
+  .topbar{height:auto;padding:11px 0;flex-wrap:wrap;gap:10px}
+  .brand small{display:none}
+  .ob h1{font-size:29px}
+  .datebar h2{font-size:21px}
+}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<div id="layer"></div>
+<script>
+/* ============================================================
+   Gaja — schedule engine + UI.  No build step, no dependencies.
+   ============================================================ */
+
+/* ---------- categories ---------- */
+const CAT = {
+  work:       {label:'Work',          icon:'💼', v:'--work',       pri:1, rigid:true,  split:false},
+  class:      {label:'Classes',       icon:'🎓', v:'--class',      pri:1, rigid:true,  split:false},
+  assessment: {label:'Assessments',   icon:'📚', v:'--assessment', pri:1, rigid:false, split:true },
+  tournament: {label:'Tournaments',   icon:'🏆', v:'--tournament', pri:2, rigid:true,  split:false},
+  health:     {label:'Health',        icon:'💪', v:'--health',     pri:3, rigid:false, split:false},
+  meal:       {label:'Meals',         icon:'🍽️', v:'--meal',       pri:2, rigid:false, split:false},
+  habit:      {label:'Daily habits',  icon:'☕', v:'--habit',      pri:3, rigid:false, split:false},
+  hobby:      {label:'Hobbies',       icon:'🎨', v:'--hobby',      pri:4, rigid:false, split:true },
+  special:    {label:'Reminders',     icon:'🔔', v:'--special',    pri:2, rigid:false, split:false},
+  travel:     {label:'Travel',        icon:'🚗', v:'--travel',     pri:1, rigid:true,  split:false},
+  sleep:      {label:'Sleep',         icon:'😴', v:'--sleep',      pri:1, rigid:true,  split:false},
+};
+const catColor = c => `var(${(CAT[c]||CAT.habit).v})`;
+const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+const DOW1 = ['S','M','T','W','T','F','S'];
+const MON = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+/* ---------- time + date utils ---------- */
+const pad = n => String(n).padStart(2,'0');
+const t2m = t => { if(!t) return 0; const [h,m]=t.split(':').map(Number); return h*60+(m||0); };
+const m2t = m => { m=((Math.round(m)%1440)+1440)%1440; return pad(Math.floor(m/60))+':'+pad(m%60); };
+function clock(m){ m=((Math.round(m)%1440)+1440)%1440; let h=Math.floor(m/60), mm=m%60;
+  const ap = h>=12?'pm':'am'; h = h%12===0?12:h%12; return mm? `${h}:${pad(mm)}${ap}` : `${h}${ap}`; }
+function dur(m){ const h=Math.floor(m/60), mm=Math.round(m%60);
+  return h&&mm ? `${h}h ${mm}m` : h ? `${h}h` : `${mm}m`; }
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parseISO = s => { const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); };
+const addDays = (d,n) => { const x=new Date(d); x.setDate(x.getDate()+n); return x; };
+const daysBetween = (a,b) => Math.round((parseISO(b)-parseISO(a))/86400000);
+const TODAY = iso(new Date());
+const uid = () => Math.random().toString(36).slice(2,9);
+const esc = s => String(s??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clamp = (v,a,b) => Math.max(a,Math.min(b,v));
+
+/* ---------- storage (works in the artifact sandbox, degrades to memory) ---------- */
+const mem = {};
+const store = {
+  async get(k){ try{ if(window.storage){ const r=await window.storage.get(k,false); return r? JSON.parse(r.value):null; } }catch(e){} return mem[k]??null; },
+  async set(k,v){ try{ if(window.storage){ await window.storage.set(k,JSON.stringify(v),false); return; } }catch(e){} mem[k]=v; },
+  async del(k){ try{ if(window.storage){ await window.storage.delete(k,false); return; } }catch(e){} delete mem[k]; },
+};
+const KEY = 'gaja:plan:v1';
+
+/* ---------- state ---------- */
+/*  rules   : recurring or one-off blocks the engine lays down
+    goals   : assessments + tournaments (hour targets w/ deadlines)
+    marks   : per-instance overrides  { "2026-08-04|ruleId|0": {done, start, end, title, skipped} }  */
+let S = null;
+const blank = () => ({
+  profile:{ name:'', place:'', hasPlace:false, wake:'07:00', sleep:'23:00',
+            meals:[], autoMeals:true, mealCount:3, mealAtWork:true },
+  rules:[], goals:[], marks:{}, dismissed:{}, created:TODAY,
+});
+const save = () => store.set(KEY, S);
+
+/* ---------- travel estimate (notes: "estimates the traffic") ---------- */
+function travelMinutes(miles, startMin){
+  if(!miles) return 0;
+  const rush = (startMin>=420&&startMin<=555) || (startMin>=960&&startMin<=1110);
+  const mph = miles>12 ? (rush?34:52) : (rush?17:26);
+  return clamp(Math.round(miles/mph*60/5)*5, 5, 240);
+}
+function entryTravel(e, startMin){
+  if(e.mode==='In person') return travelMinutes(Number(e.miles)||0, startMin);
+  return Number(e.vmin)||0;                       // virtual: optional walk/setup time
+}
+
+/* ============================================================
+   THE ENGINE
+   ============================================================ */
+let VERSION = 0;                       // bumped on every mutation; invalidates caches
+const bump = () => { VERSION++; dayCache.clear(); studyCache.clear(); };
+const dayCache = new Map();
+const studyCache = new Map();
+
+const markKey = (date,src,i=0) => `${date}|${src}|${i}`;
+const getMark = (date,src,i=0) => S.marks[markKey(date,src,i)] || null;
+
+/* --- does a rule fire on this date? --- */
+function fires(rule, dstr, d){
+  if(rule.from && dstr < rule.from) return false;
+  if(rule.until && dstr > rule.until) return false;
+  switch(rule.repeat){
+    case 'once':    return dstr === rule.date;
+    case 'daily':   return true;
+    case 'weekly':  return (rule.days||[]).includes(d.getDay());
+    case 'monthly': return parseISO(rule.date).getDate() === d.getDate();
+    case 'yearly':  { const a=parseISO(rule.date);
+                      return a.getDate()===d.getDate() && a.getMonth()===d.getMonth(); }
+    default: return false;
+  }
+}
+
+/* --- assessments: minutes to study each day, with catch-up --- */
+function studyMap(goal){
+  const hit = studyCache.get(goal.id);
+  if(hit && hit.v===VERSION) return hit.map;
+  const map = {}; let done = 0;
+  const total = (Number(goal.hours)||0)*60;
+  const cap = (Number(goal.maxDaily)||3)*60;
+  let d = goal.from > S.created ? goal.from : S.created;
+  let guard = 0;
+  while(d <= goal.deadline && guard++ < 800){
+    const left = Math.max(0, total - done);
+    const daysLeft = Math.max(1, daysBetween(d, goal.deadline));   // exam day itself is not a study day
+    let target = left <= 0 ? 0 : clamp(Math.ceil(left/daysLeft/5)*5, 0, cap);
+    if(daysLeft <= 1) target = Math.min(left, cap);
+    map[d] = target;
+    const mk = getMark(d, goal.id, 0);
+    if(d < TODAY) done += (mk && mk.done) ? (mk.mins ?? target) : 0;   // missed days roll forward
+    else done += (mk && mk.skipped) ? 0 : target;
+    d = iso(addDays(parseISO(d),1));
+  }
+  studyCache.set(goal.id, {v:VERSION, map});
+  return map;
+}
+function studyProgress(goal){
+  const total = (Number(goal.hours)||0)*60; let done=0;
+  for(const k in S.marks){
+    const [dt,src] = k.split('|');
+    if(src===goal.id && S.marks[k].done) done += (S.marks[k].mins ?? 0) || (studyMap(goal)[dt]||0);
+  }
+  return {done, total, pct: total? clamp(done/total,0,1) : 0};
+}
+
+/* --- collect everything that wants a slot on this date --- */
+function candidates(dstr, win){
+  const d = parseISO(dstr), out = [];
+  const push = c => out.push(Object.assign({
+    idx:0, rigid:false, split:false, minMin:15, movable:true, allowInside:[]
+  }, c));
+
+  for(const r of S.rules){
+    if(!fires(r, dstr, d)) continue;
+    const c = CAT[r.cat];
+    let start = t2m(r.start), end = t2m(r.end);
+    if(end <= start) end += 1440;                      // crosses midnight
+    const mk = getMark(dstr, r.id);
+    if(mk && mk.skipped) continue;
+    if(mk && mk.start){ const s=t2m(mk.start), e=t2m(mk.end); start=s; end=e>s?e:e+1440; }
+    const padB = r.travelBefore||0, padA = r.travelAfter||0;   // travel rides with the block
+    push({src:r.id, cat:r.cat, title:(mk&&mk.title)||r.title, pri:r.pri,
+      start:start-padB, end:end+padA, padB, padA,
+      rigid:c.rigid, movable:!c.rigid, carve: r.cat==='work' && !!r.mealBreak,
+      split: c.split && !padB && !padA,
+      minMin: r.minMin || (c.rigid?end-start+padB+padA:Math.max(15, Math.round((end-start)*0.5))+padB+padA),
+      place:r.place, mode:r.mode, note:r.note,
+      drift: c.rigid ? 0 : ({habit:180, health:360, special:240}[r.cat] || 0)});
+  }
+
+  for(const g of S.goals){
+    if(g.kind==='assessment'){
+      if(dstr === g.deadline){
+        const s = t2m(g.examTime||'09:00');
+        push({src:g.id, cat:'assessment', title:`${g.title} — exam`, pri:1, order:0.5, start:s, end:s+(Number(g.examLen)||120),
+              rigid:true, movable:false, idx:9, place:g.place, isExam:true});
+        continue;
+      }
+      if(dstr < g.from || dstr > g.deadline) continue;
+      const mins = studyMap(g)[dstr] || 0;
+      if(mins < 10) continue;
+      const mk = getMark(dstr, g.id);
+      if(mk && mk.skipped) continue;
+      let s = t2m(g.pref || '18:00'), e = s + mins;
+      if(mk && mk.start){ s=t2m(mk.start); e=t2m(mk.end); }
+      push({src:g.id, cat:'assessment', title:`Study — ${g.title}`, pri:g.pri, start:s, end:e,
+            split:true, minMin:30, isStudy:true, goal:g.id});
+    }
+    if(g.kind==='tournament'){
+      if(dstr === g.deadline){
+        const s = t2m(g.startTime||'09:00');
+        push({src:g.id, cat:'tournament', title:`${g.title}`, pri:g.pri, order:0.5, start:s, end:s+(Number(g.len)||240),
+              rigid:true, movable:false, idx:9, place:g.place});
+      }
+    }
+  }
+
+  /* meals */
+  const P = S.profile;
+  if(P.meals && P.meals.length){
+    const span = win.end - win.start;
+    P.meals.forEach((m,i) => {
+      const mk = getMark(dstr, 'meal'+i);
+      if(mk && mk.skipped) return;
+      let s;
+      if(m.time) s = t2m(m.time);
+      else {
+        const anchor = [win.start+45, Math.max(win.start+240,750), Math.max(win.start+360,win.end-210),
+                        win.start+Math.round(span*0.55), win.end-90][Math.min(i,4)];
+        s = Math.round(clamp(anchor, win.start+15, win.end-40)/15)*15;
+      }
+      let e = s + (Number(m.len)||30);
+      if(mk && mk.start){ s=t2m(mk.start); e=t2m(mk.end); }
+      push({src:'meal'+i, cat:'meal', title:m.name, pri:2, start:s, end:e, minMin:20, drift:240,
+            order: m.time ? 2 : 3.5,     // an unspecified meal fills gaps, it does not claim them
+            canCarve: !!P.mealAtWork});
+    });
+  }
+  return out;
+}
+
+/* --- overlap helpers --- */
+const hits = (a,b) => a.start < b.end && b.start < a.end;
+const pads = p => [p.padB?{start:p.start,end:p.start+p.padB}:null,
+                   p.padA?{start:p.end-p.padA,end:p.end}:null].filter(Boolean);
+function freeGaps(placed, win){
+  const busy = placed.map(p=>({s:p.start,e:p.end})).sort((a,b)=>a.s-b.s);
+  const gaps=[]; let cur = win.start;
+  for(const b of busy){
+    if(b.s > cur) gaps.push({s:cur, e:Math.min(b.s,win.end)});
+    cur = Math.max(cur, b.e);
+    if(cur >= win.end) break;
+  }
+  if(cur < win.end) gaps.push({s:cur, e:win.end});
+  return gaps.filter(g => g.e - g.s >= 5);
+}
+const clipGaps = (gaps,a,b) => gaps.map(g=>({s:Math.max(g.s,a), e:Math.min(g.e,b)})).filter(g=>g.e-g.s>=5);
+function nearestFit(gaps, pref, len){
+  let best=null, d=Infinity;
+  for(const g of gaps){
+    if(g.e-g.s < len) continue;
+    const s = clamp(pref, g.s, g.e-len), dd = Math.abs(s-pref);
+    if(dd < d){ d=dd; best={start:s, end:s+len, moved:dd>0}; }
+  }
+  return best;
+}
+const widest = gaps => gaps.reduce((m,g)=> !m || (g.e-g.s)>(m.e-m.s) ? g : m, null);
+
+/* --- the placement pass: priority wins, and nothing ever shares a minute --- */
+function layout(cands, win){
+  const placed = [], conflicts = [];
+  const ord = c => c.order ?? c.pri;
+  cands.sort((a,b) => ord(a)-ord(b) || (b.rigid?1:0)-(a.rigid?1:0) || a.start-b.start);
+
+  const clear = (s,e) => s >= win.start-1 && e <= win.end+1 && !placed.some(p => hits({start:s,end:e}, p));
+  const take  = (c,slot) => placed.push(Object.assign({}, c, slot));
+
+  /* a workday with a meal break can be opened up to let a meal sit between two halves */
+  function carve(c, len, strict){
+    for(const p of placed.filter(x => x.carve)){
+      const inS = p.start+(p.padB||0), inE = p.end-(p.padA||0);
+      if(strict && !(c.start >= inS && c.end <= inE)) continue;   // the break you asked for, not one invented
+      const lo = inS+45, hi = inE-45;                     // leave real work on both sides
+      if(hi - lo < len) continue;
+      const s = clamp(c.start, lo, hi-len);
+      if(c.drift && Math.abs(s-c.start) > c.drift) continue;
+      const i = placed.indexOf(p);
+      placed.splice(i, 1,
+        Object.assign({}, p, {end:s,       padA:0, part:'x'}),
+        Object.assign({}, p, {start:s+len, padB:0, part:'x'}));
+      take(c, {start:s, end:s+len, moved:s!==c.start});
+      return true;
+    }
+    return false;
+  }
+
+  for(const c of cands){
+    const want = c.end - c.start;
+
+    if(c.rigid || !c.movable){                            // cannot be moved or shortened in real life
+      if(clear(c.start, c.end)){ placed.push(c); continue; }
+      const clash = placed.find(p => hits(c,p));
+      conflicts.push({item:c, kind:'clash', why: !clash ? 'Falls outside your waking hours.'
+        : clash.rigid ? `Runs into ${clash.title}, and neither can be shortened. Gaja kept ${clash.title} — this one needs a real-world move.`
+                      : `Overlaps ${clash.title} (priority ${clash.pri}).`});
+      continue;
+    }
+
+    if(clear(c.start, c.end)){ placed.push(c); continue; } // exactly where you asked
+
+    const all  = freeGaps(placed, win);
+    const near = c.drift ? clipGaps(all, c.start-c.drift, c.end+c.drift) : all;
+
+    if(c.canCarve && carve(c, want, true)) continue;      // 1. take the meal break you said you had
+
+    let slot = nearestFit(near, c.start, want);           // 2. same length, close to the time you gave
+    if(slot){ take(c, slot); continue; }
+
+    if(c.split){                                          // 3. break it into pieces that do fit
+      const pieces = []; let left = want;
+      for(const g of near.slice().sort((a,b)=>Math.abs(a.s-c.start)-Math.abs(b.s-c.start))){
+        if(left <= 0) break;
+        const grab = Math.min(left, g.e-g.s);
+        if(grab < c.minMin) continue;
+        pieces.push({start:g.s, end:g.s+grab}); left -= grab;
+      }
+      if(pieces.length && left < want){
+        pieces.sort((a,b)=>a.start-b.start).forEach((p,i)=>take(c, Object.assign({}, p,
+          {idx:100+i, part: pieces.length>1 ? `${i+1}/${pieces.length}` : '', moved:true})));
+        if(left > 0) conflicts.push({item:c, kind:'short',
+          why:`Only ${dur(want-left)} of ${dur(want)} fits today.`});
+        continue;
+      }
+    }
+
+    const roomNear = widest(near);                        // 4. a shorter session, still near the time
+    if(roomNear && roomNear.e-roomNear.s >= c.minMin){
+      const len = Math.min(roomNear.e-roomNear.s, want);
+      take(c, {start:roomNear.s, end:roomNear.s+len, moved:true});
+      conflicts.push({item:c, kind:'short', why:`Trimmed to ${dur(len)} — the hours around ${clock(c.start)} are full.`});
+      continue;
+    }
+
+    if(c.canCarve && carve(c, want, false)){              // 5. eat at your desk rather than not at all
+      conflicts.push({item:c, kind:'moved', why:`Moved into your work hours — nothing was open near ${clock(c.start)}.`});
+      continue;
+    }
+
+    slot = nearestFit(all, c.start, want);                // 6. full length, anywhere in the day
+    if(slot){
+      take(c, slot);
+      conflicts.push({item:c, kind:'moved', why:`Moved to ${clock(slot.start)} — nothing was free near ${clock(c.start)}.`});
+      continue;
+    }
+
+    const roomAny = widest(all);                          // 7. shorter, anywhere in the day
+    if(roomAny && roomAny.e-roomAny.s >= c.minMin){
+      const len = Math.min(roomAny.e-roomAny.s, want);
+      take(c, {start:roomAny.s, end:roomAny.s+len, moved:true});
+      conflicts.push({item:c, kind:'short', why:`Cut to ${dur(len)} at ${clock(roomAny.s)} — the only opening left today.`});
+      continue;
+    }
+
+    conflicts.push({item:c, kind:'drop',                  // 8. genuinely nowhere to put it
+      why:`Needs ${dur(want)} and the day has no opening left. Dropped so nothing double-books.`});
+  }
+  placed.sort((a,b)=>a.start-b.start || a.pri-b.pri);
+  return {placed, conflicts};
+}
+
+/* --- one day, fully resolved --- */
+function buildDay(dstr){
+  const hit = dayCache.get(dstr);
+  if(hit && hit.v===VERSION) return hit.day;
+  const P = S.profile;
+  const wake = t2m(P.wake); let sleep = t2m(P.sleep);
+  if(sleep <= wake) sleep += 1440;
+  const win = {start:wake, end:sleep};
+  const cands = candidates(dstr, win);
+  const {placed, conflicts} = layout(cands, win);
+  const booked = placed.reduce((s,p)=>s+(p.end-p.start),0);
+
+  const events = [];
+  for(const p of placed){                                  // split the travel padding back out
+    const inS = p.start+(p.padB||0), inE = p.end-(p.padA||0);
+    if(p.padB) events.push(Object.assign({},p,{cat:'travel', title:`Travel \u2192 ${p.title}`,
+      start:p.start, end:inS, src:p.src+':t1', parent:p.src, padB:0, padA:0, part:''}));
+    events.push(Object.assign({},p,{start:inS, end:inE, parent:p.src}));
+    if(p.padA) events.push(Object.assign({},p,{cat:'travel', title:'Travel home',
+      start:inE, end:p.end, src:p.src+':t2', parent:p.src, padB:0, padA:0, part:''}));
+  }
+  events.sort((a,b)=>a.start-b.start || a.end-b.end);
+
+  /* last line of defence: the view is only ever handed a clean, disjoint timeline */
+  for(let i=1; i<events.length; i++){
+    const prev = events[i-1], cur = events[i];
+    if(cur.start < prev.end){
+      if(cur.end - prev.end >= 10){ cur.start = prev.end; cur.trimmed = true; }
+      else { conflicts.push({item:cur, kind:'drop',
+              why:`Would have landed on top of ${prev.title}. Removed to keep the day clean.`});
+             events.splice(i--, 1); }
+    }
+  }
+
+  const seen = {};                                         // number the pieces of anything that got broken up
+  events.forEach(e=>{ if(e.part && e.cat!=='travel') seen[e.src]=(seen[e.src]||0)+1; });
+  const run = {};
+  events.forEach(e=>{ if(!e.part || e.cat==='travel') return;
+    run[e.src]=(run[e.src]||0)+1;
+    e.part = seen[e.src] > 1 ? `${run[e.src]}/${seen[e.src]}` : ''; });
+
+  const gaps = freeGaps(events, win).filter(g => g.e-g.s >= 150);
+  const busy = events.filter(p=>p.cat!=='travel').reduce((s,p)=>s+(p.end-p.start),0);
+  const asked = cands.reduce((s,c)=>s+(c.end-c.start),0);
+  const room  = win.end - win.start;
+  const lost  = conflicts.filter(c=>c.kind==='drop' || c.kind==='clash');
+  const day = {date:dstr, win, events, conflicts, gaps, busy,
+               free:Math.max(0, room-booked),
+               overload: lost.length ? {asked, room, over:Math.max(0, asked-room), lost:lost.length} : null};
+  dayCache.set(dstr, {v:VERSION, day});
+  return day;
+}
+
+/* ============================================================
+   FORM PRIMITIVES
+   ============================================================ */
+const REG = new Map();
+const reg = o => { if(!o._id){ o._id = uid(); } REG.set(o._id, o); return o._id; };
+
+function F(o, d){                        // d: {k,t,label,hint,ph,opts,min,max,step}
+  const id = reg(o), v = o[d.k];
+  const base = `data-e="${id}" data-k="${d.k}"${d.re?' data-re="1"':''}`;
+  const lbl = d.label ? `<label class="flabel" for="i${id}${d.k}">${d.label}</label>` : '';
+  let inner = '';
+  switch(d.t){
+    case 'text': case 'date': case 'time': case 'num':
+      inner = `<input id="i${id}${d.k}" type="${d.t==='num'?'number':d.t}" ${base}
+        value="${esc(v??'')}" placeholder="${esc(d.ph||'')}"
+        ${d.min!=null?`min="${d.min}"`:''} ${d.max!=null?`max="${d.max}"`:''} ${d.step?`step="${d.step}"`:''}>`;
+      break;
+    case 'days':
+      inner = `<div class="days" ${base} data-t="days">${DOW1.map((n,i)=>
+        `<button type="button" data-day="${i}" aria-pressed="${(v||[]).includes(i)}" title="${DOW[i]}">${n}</button>`).join('')}</div>`;
+      break;
+    case 'choice':
+      inner = `<div class="chips" ${base} data-t="choice">${d.opts.map(op=>
+        `<button type="button" class="chip" data-val="${esc(op)}" aria-pressed="${v===op}">${esc(op)}</button>`).join('')}</div>`;
+      break;
+    case 'pri':
+      inner = `<div class="pri" ${base} data-t="pri">${[1,2,3,4].map(n=>
+        `<button type="button" data-val="${n}" aria-pressed="${Number(v)===n}"><b>${n}</b><small>${
+          ['highest','high','normal','low'][n-1]}</small></button>`).join('')}</div>`;
+      break;
+    case 'check':
+      return `<label class="check"><input type="checkbox" ${base} ${v?'checked':''}><span>${d.label}${
+        d.hint?`<span class="hint" style="margin:0">${d.hint}</span>`:''}</span></label>`;
+  }
+  return `<div class="field">${lbl}${inner}${d.hint&&d.t!=='check'?`<div class="hint">${d.hint}</div>`:''}</div>`;
+}
+const ROW = (...s) => `<div class="row">${s.join('')}</div>`;
+
+/* one delegated listener for every form control in the app */
+document.addEventListener('input', e => {
+  const el = e.target.closest('[data-e]'); if(!el || el.dataset.t) return;
+  const o = REG.get(el.dataset.e); if(!o) return;
+  o[el.dataset.k] = el.type==='checkbox' ? el.checked : el.value;
+  if(el.dataset.re) rerender();
+  onFormChange();
+});
+document.addEventListener('click', e => {
+  const box = e.target.closest('[data-t]'); if(!box) return;
+  const btn = e.target.closest('button'); if(!btn) return;
+  const o = REG.get(box.dataset.e); if(!o) return;
+  const k = box.dataset.k;
+  if(box.dataset.t==='days'){
+    const n = Number(btn.dataset.day); const arr = o[k] = (o[k]||[]).slice();
+    const i = arr.indexOf(n); i<0 ? arr.push(n) : arr.splice(i,1);
+  } else if(box.dataset.t==='choice'){ o[k] = btn.dataset.val; }
+  else if(box.dataset.t==='pri'){ o[k] = Number(btn.dataset.val); }
+  rerender(); onFormChange();
+});
+let onFormChange = () => {};
+let rerender = () => {};
+
+/* travel block — location questions bend to what the profile knows */
+function travelFields(o){
+  if(o.mode === 'Virtual')
+    return F(o,{k:'vmin',t:'num',label:'Set-up or walk time (optional)',ph:'0',min:0,max:120,hint:'Minutes to get to your desk and log in.'});
+  const known = S.profile.hasPlace;
+  return known
+    ? ROW(F(o,{k:'place',t:'text',label:'Where',ph:'e.g. Rosslyn office'}),
+          F(o,{k:'miles',t:'num',label:'Miles from home',ph:'8',min:0,step:'0.5'}))
+    : F(o,{k:'miles',t:'num',label:'Miles from home',ph:'8',min:0,step:'0.5',
+           hint:'Gaja pads the drive and adds rush-hour time automatically.'});
+}
+const modeField = o => F(o,{k:'mode',t:'choice',label:'In person or virtual',opts:['In person','Virtual'],re:true});
+
+/* ============================================================
+   ENTRY SCHEMAS  (one shape per category)
+   ============================================================ */
+const SCHEMA = {
+  work: { cat:'work', add:'Add a job', blank:()=>({title:'Work',days:[1,2,3,4,5],start:'09:00',end:'17:00',mode:'In person',miles:'',vmin:'',mealBreak:true,pri:1}),
+    sum:e=>`${daysLabel(e.days)} · ${clock(t2m(e.start))}–${clock(t2m(e.end))}${e.mode==='In person'&&e.miles?` · ${e.miles} mi`:''}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Name'})+F(e,{k:'days',t:'days',label:'Days'})
+      +ROW(F(e,{k:'start',t:'time',label:'Starts'}),F(e,{k:'end',t:'time',label:'Ends'}))
+      +modeField(e)+travelFields(e)
+      +F(e,{k:'mealBreak',t:'check',label:'There is a meal break inside these hours',hint:'Lets Gaja put lunch inside the workday instead of around it.'})
+      +F(e,{k:'pri',t:'pri',label:'Priority'}) },
+
+  class:{ cat:'class', add:'Add a class', blank:()=>({title:'',days:[2,4],start:'13:00',end:'14:30',mode:'In person',miles:'',vmin:'',pri:1}),
+    sum:e=>`${daysLabel(e.days)} · ${clock(t2m(e.start))}–${clock(t2m(e.end))}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Class',ph:'Organic Chemistry II'})+F(e,{k:'days',t:'days',label:'Days'})
+      +ROW(F(e,{k:'start',t:'time',label:'Starts'}),F(e,{k:'end',t:'time',label:'Ends'}))
+      +modeField(e)+travelFields(e)+F(e,{k:'pri',t:'pri',label:'Priority'}) },
+
+  health:{ cat:'health', add:'Add a workout or activity', blank:()=>({title:'Gym',days:[1,3,5],start:'07:30',end:'08:30',mode:'In person',miles:'',vmin:'',plan:'',pri:3}),
+    sum:e=>`${daysLabel(e.days)} · ${clock(t2m(e.start))}–${clock(t2m(e.end))}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Activity',ph:'Gym, volleyball, run'})+F(e,{k:'days',t:'days',label:'Days'})
+      +ROW(F(e,{k:'start',t:'time',label:'Starts'}),F(e,{k:'end',t:'time',label:'Ends'}))
+      +F(e,{k:'plan',t:'text',label:'Split (optional)',ph:'chest / pull / legs'})
+      +modeField(e)+travelFields(e)+F(e,{k:'pri',t:'pri',label:'Priority'}) },
+
+  hobby:{ cat:'hobby', add:'Add a hobby', blank:()=>({title:'',days:[6],start:'15:00',end:'17:00',pri:4}),
+    sum:e=>`${daysLabel(e.days)} · ${clock(t2m(e.start))}–${clock(t2m(e.end))}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Hobby',ph:'Guitar, drawing, climbing'})+F(e,{k:'days',t:'days',label:'Days'})
+      +ROW(F(e,{k:'start',t:'time',label:'Starts'}),F(e,{k:'end',t:'time',label:'Ends'}))
+      +F(e,{k:'pri',t:'pri',label:'Priority',hint:'Hobbies give way to anything more urgent, and Gaja will split them across gaps.'}) },
+
+  habit:{ cat:'habit', add:'Add a habit', blank:()=>({title:'',days:[0,1,2,3,4,5,6],start:'07:05',len:15,pri:3}),
+    sum:e=>`${daysLabel(e.days)} · ${clock(t2m(e.start))} · ${dur(Number(e.len)||15)}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Habit',ph:'Shower, coffee, stretch'})+F(e,{k:'days',t:'days',label:'Days'})
+      +ROW(F(e,{k:'start',t:'time',label:'Around'}),F(e,{k:'len',t:'num',label:'Minutes',min:5,max:240}))
+      +F(e,{k:'pri',t:'pri',label:'Priority'}) },
+
+  special:{ cat:'special', add:'Add a reminder', blank:()=>({title:'',date:TODAY,repeat:'Yearly',start:'10:00',len:60,pri:2}),
+    sum:e=>`${e.repeat} · from ${e.date} · ${clock(t2m(e.start))}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Reminder',ph:'Annual physical, safety inspection, birthday'})
+      +ROW(F(e,{k:'date',t:'date',label:'First date'}),F(e,{k:'start',t:'time',label:'Time'}))
+      +ROW(F(e,{k:'len',t:'num',label:'Minutes',min:10,max:600}),'')
+      +F(e,{k:'repeat',t:'choice',label:'Repeats',opts:['Once','Weekly','Monthly','Yearly']})
+      +F(e,{k:'pri',t:'pri',label:'Priority'}) },
+
+  assessment:{ cat:'assessment', add:'Add an exam or certification',
+    blank:()=>({title:'',subject:'',deadline:iso(addDays(new Date(),30)),hours:20,maxDaily:2,pref:'18:00',
+                examTime:'09:00',examLen:120,mode:'In person',place:'',pri:1}),
+    sum:e=>`${e.deadline} · ${e.hours}h of study · ${e.maxDaily}h/day cap`,
+    form:e=>F(e,{k:'title',t:'text',label:'Exam or certification',ph:'CompTIA Security+'})
+      +F(e,{k:'subject',t:'text',label:'Class or subject (optional)'})
+      +ROW(F(e,{k:'deadline',t:'date',label:'Exam date'}),F(e,{k:'examTime',t:'time',label:'Exam starts'}))
+      +ROW(F(e,{k:'hours',t:'num',label:'Total study hours needed',min:1,max:600}),
+           F(e,{k:'maxDaily',t:'num',label:'Max study hours per day',min:0.5,max:12,step:'0.5'}))
+      +F(e,{k:'pref',t:'time',label:'Preferred study time',hint:'Gaja spreads the hours to the exam date and catches up whatever you miss.'})
+      +modeField(e)+(e.mode==='In person'?F(e,{k:'place',t:'text',label:'Test centre',ph:'Where you sit the exam'}):'')
+      +F(e,{k:'pri',t:'pri',label:'Priority'}) },
+
+  tournament:{ cat:'tournament', add:'Add a tournament',
+    blank:()=>({title:'',deadline:iso(addDays(new Date(),21)),startTime:'09:00',len:300,
+                days:[2,4],start:'18:00',end:'20:00',place:'',pri:2}),
+    sum:e=>`${e.deadline} · practice ${daysLabel(e.days)}`,
+    form:e=>F(e,{k:'title',t:'text',label:'Tournament',ph:'Regional volleyball'})
+      +ROW(F(e,{k:'deadline',t:'date',label:'Date'}),F(e,{k:'startTime',t:'time',label:'Starts'}))
+      +ROW(F(e,{k:'len',t:'num',label:'Minutes',min:30,max:900}),F(e,{k:'place',t:'text',label:'Location (optional)'}))
+      +`<div class="field"><span class="flabel">Practice</span></div>`
+      +F(e,{k:'days',t:'days',label:'Practice days'})
+      +ROW(F(e,{k:'start',t:'time',label:'Practice starts'}),F(e,{k:'end',t:'time',label:'Practice ends'}))
+      +F(e,{k:'pri',t:'pri',label:'Priority',hint:'Set this above classes if the season outranks coursework this month.'}) },
+};
+function daysLabel(ds){
+  if(!ds||!ds.length) return 'no days';
+  const s=[...ds].sort((a,b)=>a-b);
+  if(s.length===7) return 'Every day';
+  if(s.join()==='1,2,3,4,5') return 'Mon–Fri';
+  if(s.join()==='0,6') return 'Weekends';
+  return s.map(i=>DOW[i]).join(' ');
+}
+
+/* collection editor used by both onboarding and the settings sheet */
+function collection(key, list, opts={}){
+  const sc = SCHEMA[key], c = CAT[sc.cat];
+  const rows = list.map((e,i)=>{
+    const open = e._open;
+    return `<div class="entry">
+      <div class="entry-head" data-toggle="${key}:${i}">
+        <span class="ico" style="color:${catColor(sc.cat)}">${c.icon}</span>
+        <div style="flex:1;min-width:0">
+          <b>${esc(e.title||sc.add.replace('Add a ',''))}</b>
+          <div class="meta">${esc(sc.sum(e))}</div>
+        </div>
+        <button class="iconbtn" data-del="${key}:${i}" title="Remove" aria-label="Remove">✕</button>
+        <span style="color:var(--graphite-dim);font-family:var(--mono);font-size:12px">${open?'▲':'▼'}</span>
+      </div>
+      <div class="entry-body ${open?'':'collapsed'}">${open?sc.form(e):''}</div>
+    </div>`;
+  }).join('');
+  return (list.length ? `<div class="entries">${rows}</div>`
+         : `<div class="empty">${opts.empty||'Nothing here yet — and that is a fine answer.'}</div>`)
+    + `<button class="addbtn" data-add="${key}">+ ${sc.add}</button>`;
+}
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+let D = null, step = 0;
+const newDraft = () => ({ work:[],class:[],health:[],hobby:[],habit:[],special:[],assessment:[],tournament:[] });
+
+const STEPS = [
+  { no:'Start', title:'', render:()=>`
+    <div class="hero">
+      <div class="step-no">Gaja · life scheduler</div>
+      <h1>Tell it once.<br><span class="mark">It plans the year.</span></h1>
+      <p>Gaja takes your fixed hours — work, classes, an exam you have not started studying for — and
+      fills everything around them. Answer what applies, skip what doesn't.</p>
+      <div class="hero-list">
+        <div><span>01</span><span>Your fixed hours: work, classes, practice.</span></div>
+        <div><span>02</span><span>Your targets: exam hours, tournament dates, habits you keep dropping.</span></div>
+        <div><span>03</span><span>A year of days, resolved by priority, editable anywhere.</span></div>
+      </div>
+    </div>
+    <div class="field" style="margin-top:34px">${F(S.profile,{k:'name',t:'text',label:'What should Gaja call you?',ph:'Optional'})}</div>`},
+
+  { no:'Step 1', title:'Where are you based?', lede:'This is optional. Share a location and Gaja can ask for real places later; skip it and it will only ever ask how far away something is.',
+    render:()=>F(S.profile,{k:'hasPlace',t:'check',label:'Use my location for travel estimates',hint:'Nothing leaves this device.'})
+      + (S.profile.hasPlace ? F(S.profile,{k:'place',t:'text',label:'Home area',ph:'Alexandria, VA'}) : '')},
+
+  { no:'Step 2', title:'When does your day start and end?', lede:'Everything else gets laid inside these two edges. Gaja will never schedule you past them.',
+    render:()=>ROW(F(S.profile,{k:'wake',t:'time',label:'Wake up'}),F(S.profile,{k:'sleep',t:'time',label:'Sleep'}))},
+
+  { no:'Step 3', title:'Work', lede:'Fixed hours that cannot shrink. Priority 1 by default.',
+    render:()=>collection('work', D.work, {empty:'No job to schedule around.'})},
+
+  { no:'Step 4', title:'Classes', lede:'Same idea as work: these hold their slot no matter what else wants it.',
+    render:()=>collection('class', D.class, {empty:'Not in school right now.'})},
+
+  { no:'Step 5', title:'Meals', lede:'Give exact times if you keep them. Leave them blank and Gaja spaces meals across your waking hours, using whatever gaps the day leaves.',
+    render:()=>F(S.profile,{k:'mealCount',t:'num',label:'Meals per day',min:0,max:5,re:true})
+      + F(S.profile,{k:'autoMeals',t:'check',label:'Let Gaja pick the times',re:true})
+      + (S.profile.autoMeals ? '' : mealTimeFields())
+      + F(S.profile,{k:'mealAtWork',t:'check',label:'One meal can happen inside my work hours',hint:'Only applies to jobs you marked as having a meal break.'})},
+
+  { no:'Step 6', title:'Health', lede:'Gym, sport, physio, a walk. Repetitive by design — but Gaja will trade a session away when an exam is close.',
+    render:()=>collection('health', D.health, {empty:'No standing activity yet.'})},
+
+  { no:'Step 7', title:'Assessments', lede:'Exams and certifications. Give the total hours you need; Gaja divides them across the days you have left and re-divides whenever you miss one.',
+    render:()=>collection('assessment', D.assessment, {empty:'Nothing on the calendar to study for.'})},
+
+  { no:'Step 8', title:'Tournaments', lede:'A date you have to be ready for, plus the practices leading to it.',
+    render:()=>collection('tournament', D.tournament, {empty:'No competition dates.'})},
+
+  { no:'Step 9', title:'Reminders', lede:'The once-a-year things that are easy to forget: physical, dentist, safety and emissions inspection, birthdays.',
+    render:()=>collection('special', D.special, {empty:'Nothing to remember yet.'})
+      + `<div class="hint" style="margin-top:12px">Common ones: ${['Annual physical','Dentist','Safety inspection','Emissions inspection','VIN inspection']
+        .map(n=>`<button class="chip" data-quick="${esc(n)}" style="margin:4px 4px 0 0">+ ${n}</button>`).join('')}</div>`},
+
+  { no:'Step 10', title:'Daily habits', lede:'Small anchors — shower, coffee, stretching. They give the rest of the day something to sit against.',
+    render:()=>collection('habit', D.habit, {empty:'No habits tracked.'})},
+
+  { no:'Step 11', title:'Hobbies', lede:'The first thing to bend when the week gets tight, and the first thing Gaja offers back when it loosens.',
+    render:()=>collection('hobby', D.hobby, {empty:'No hobbies scheduled.'})},
+
+  { no:'Last', title:'Ready to build', lede:'Gaja will lay out the next twelve months, resolve every collision by priority, and open on today.',
+    render:()=>{
+      const n = k => D[k].length;
+      const lines = [
+        ['Waking hours', `${clock(t2m(S.profile.wake))} – ${clock(t2m(S.profile.sleep))}`],
+        ['Work', n('work')?`${n('work')} · ${D.work.map(e=>daysLabel(e.days)).join(', ')}`:'none'],
+        ['Classes', n('class')||'none'], ['Meals', S.profile.mealCount+' a day'],
+        ['Health', n('health')||'none'], ['Assessments', n('assessment')||'none'],
+        ['Tournaments', n('tournament')||'none'], ['Reminders', n('special')||'none'],
+        ['Habits', n('habit')||'none'], ['Hobbies', n('hobby')||'none'],
+      ];
+      return `<div class="card">${lines.map(([a,b])=>
+        `<div class="stat"><span>${a}</span><b>${esc(String(b))}</b></div>`).join('')}</div>`;
+    }},
+];
+function mealTimeFields(){
+  syncMeals();
+  return S.profile.meals.map((m,i)=>ROW(
+    F(m,{k:'name',t:'text',label:`Meal ${i+1}`}),
+    F(m,{k:'time',t:'time',label:'Time'}),
+    F(m,{k:'len',t:'num',label:'Minutes',min:5,max:180}))).join('');
+}
+function syncMeals(){
+  const P = S.profile, want = clamp(Number(P.mealCount)||0,0,5);
+  const names = ['Breakfast','Lunch','Dinner','Snack','Late snack'];
+  P.meals = P.meals || [];
+  while(P.meals.length < want) P.meals.push({name:names[P.meals.length]||'Meal', time:'', len:30});
+  P.meals.length = want;
+  if(P.autoMeals) P.meals.forEach(m=>m.time='');
+}
+
+function renderOnboard(){
+  const st = STEPS[step];
+  document.getElementById('root').innerHTML = `
+  <div class="ob">
+    <div class="ob-head"><div class="wrap">
+      <div class="brand"><i></i>Gaja<small>setup</small></div>
+      <div class="spacer"></div>
+      <div class="rail">${STEPS.map((_,i)=>`<i class="${i===step?'on':i<step?'past':''}"></i>`).join('')}</div>
+    </div></div>
+    <div class="ob-body"><div class="wrap">
+      ${st.title?`<div class="step-no">${st.no}</div><h1>${st.title}</h1>`:''}
+      ${st.lede?`<p class="lede">${st.lede}</p>`:''}
+      <div id="stepBody">${st.render()}</div>
+    </div></div>
+    <div class="ob-foot"><div class="wrap">
+      <button class="btn ghost" id="back" ${step===0?'disabled':''}>← Back</button>
+      <div class="spacer"></div>
+      <span class="hint" style="margin:0">${step+1} of ${STEPS.length}</span>
+      <button class="btn primary" id="next">${step===STEPS.length-1?'Build my year':step===0?'Get started':'Continue'}</button>
+    </div></div>
+  </div>`;
+  document.getElementById('back').onclick = ()=>{ step=Math.max(0,step-1); renderOnboard(); };
+  document.getElementById('next').onclick = ()=>{
+    if(step===STEPS.length-1) return finish();
+    step++; renderOnboard();
+  };
+}
+rerender = () => { const b=document.getElementById('stepBody');
+  if(b) b.innerHTML = STEPS[step].render(); else if(window.paint) paint(); };
+
+/* add / remove / expand entries */
+document.addEventListener('click', e => {
+  const add = e.target.closest('[data-add]');
+  if(add){ const k=add.dataset.add; const o=SCHEMA[k].blank(); o._open=true;
+    (D?D[k]:pendingList(k)).forEach(x=>x._open=false); (D?D[k]:pendingList(k)).push(o); rerender(); return; }
+  const del = e.target.closest('[data-del]');
+  if(del){ e.stopPropagation(); const [k,i]=del.dataset.del.split(':'); (D?D[k]:pendingList(k)).splice(Number(i),1); rerender(); return; }
+  const tg = e.target.closest('[data-toggle]');
+  if(tg){ const [k,i]=tg.dataset.toggle.split(':'); const l=(D?D[k]:pendingList(k));
+    const was=l[Number(i)]._open; l.forEach(x=>x._open=false); l[Number(i)]._open=!was; rerender(); return; }
+  const q = e.target.closest('[data-quick]');
+  if(q){ const o=SCHEMA.special.blank(); o.title=q.dataset.quick; o.repeat='Yearly'; D.special.push(o); rerender(); }
+});
+let pendingList = () => [];
+
+/* ---------- draft → engine ---------- */
+function draftToItems(D){
+  const rules=[], goals=[];
+  const withTravel = (e,base) => {
+    const m = entryTravel(e, t2m(e.start));
+    return Object.assign(base,{travelBefore:m, travelAfter:m, place:e.place||'', mode:e.mode,
+                               miles:e.miles, vmin:e.vmin});
+  };
+  D.work.forEach(e=>rules.push(withTravel(e,{id:uid(),cat:'work',title:e.title||'Work',pri:Number(e.pri)||1,
+    repeat:'weekly',days:e.days||[],start:e.start,end:e.end,mealBreak:!!e.mealBreak})));
+  D.class.forEach(e=>rules.push(withTravel(e,{id:uid(),cat:'class',title:e.title||'Class',pri:Number(e.pri)||1,
+    repeat:'weekly',days:e.days||[],start:e.start,end:e.end})));
+  D.health.forEach(e=>rules.push(withTravel(e,{id:uid(),cat:'health',title:e.title||'Workout',pri:Number(e.pri)||3,
+    repeat:'weekly',days:e.days||[],start:e.start,end:e.end,note:e.plan})));
+  D.hobby.forEach(e=>rules.push({id:uid(),cat:'hobby',title:e.title||'Hobby',pri:Number(e.pri)||4,
+    repeat:'weekly',days:e.days||[],start:e.start,end:e.end}));
+  D.habit.forEach(e=>rules.push({id:uid(),cat:'habit',title:e.title||'Habit',pri:Number(e.pri)||3,
+    repeat:(e.days||[]).length===7?'daily':'weekly',days:e.days||[],start:e.start,
+    end:m2t(t2m(e.start)+(Number(e.len)||15))}));
+  D.special.forEach(e=>{
+    const rep = {Once:'once',Weekly:'weekly',Monthly:'monthly',Yearly:'yearly'}[e.repeat]||'once';
+    rules.push({id:uid(),cat:'special',title:e.title||'Reminder',pri:Number(e.pri)||2,repeat:rep,
+      date:e.date,days:[parseISO(e.date).getDay()],from:e.date,
+      start:e.start,end:m2t(t2m(e.start)+(Number(e.len)||60))});
+  });
+  D.assessment.forEach(e=>goals.push({id:uid(),kind:'assessment',cat:'assessment',title:e.title||'Exam',
+    pri:Number(e.pri)||1,from:TODAY,deadline:e.deadline,hours:Number(e.hours)||10,
+    maxDaily:Number(e.maxDaily)||2,pref:e.pref||'18:00',examTime:e.examTime,examLen:Number(e.examLen)||120,
+    place:e.place,mode:e.mode,subject:e.subject}));
+  D.tournament.forEach(e=>{
+    goals.push({id:uid(),kind:'tournament',cat:'tournament',title:e.title||'Tournament',pri:Number(e.pri)||2,
+      deadline:e.deadline,startTime:e.startTime,len:Number(e.len)||240,place:e.place});
+    if((e.days||[]).length) rules.push({id:uid(),cat:'tournament',title:`${e.title||'Team'} practice`,
+      pri:Number(e.pri)||2,repeat:'weekly',days:e.days,start:e.start,end:e.end,until:e.deadline,place:e.place});
+  });
+  return {rules, goals};
+}
+function compile(){
+  const it = draftToItems(D);
+  S.rules = it.rules; S.goals = it.goals;
+  syncMeals(); bump();
+}
+function finish(){ compile(); save(); mount(); }
+
+/* ============================================================
+   APP SHELL + VIEWS
+   ============================================================ */
+let view = 'day', cursor = TODAY;
+const PPM = () => innerWidth < 640 ? .85 : 1.05;
+
+function paint(){
+  const d = parseISO(cursor);
+  const head = `
+  <header class="top"><div class="wrap"><div class="topbar">
+    <div class="brand"><i></i>Gaja<small>${esc(S.profile.name||'your year')}</small></div>
+    <div class="spacer"></div>
+    <div class="seg">${['day','month','year'].map(v=>
+      `<button data-view="${v}" aria-pressed="${view===v}">${v}</button>`).join('')}</div>
+    <button class="btn" id="addBtn">+ Add event</button>
+    <button class="iconbtn" id="setBtn" title="Settings" aria-label="Settings">⚙</button>
+  </div></div></header>`;
+  const body = view==='day' ? dayView(d) : view==='month' ? monthView(d) : yearView(d);
+  document.getElementById('root').innerHTML = head + `<div class="wrap">${body}</div>
+    <button class="fab" id="fab" aria-label="Add event">+</button>`;
+  wire();
+  if(view==='day') requestAnimationFrame(scrollToNow);
+}
+window.paint = paint;
+
+function navbar(label, sub){
+  return `<div class="datebar">
+    <button class="iconbtn" data-nav="-1" aria-label="Previous">‹</button>
+    <button class="iconbtn" data-nav="1" aria-label="Next">›</button>
+    <div><h2>${label}</h2><div class="sub">${sub}</div></div>
+    <div class="spacer"></div>
+    <button class="btn ghost" data-nav="today">Today</button>
+  </div>`;
+}
+
+/* ---------------- DAY ---------------- */
+function dayView(d){
+  const day = buildDay(cursor), win = day.win, ppm = PPM();
+  const H = (win.end - win.start) * ppm;
+  const h0 = Math.floor(win.start/60), h1 = Math.ceil(win.end/60);
+  let ticks='', lines='';
+  for(let h=h0; h<=h1; h++){
+    const y = (h*60 - win.start)*ppm;
+    if(y<-2 || y>H+2) continue;
+    ticks += `<div class="tick" style="top:${y}px">${clock(h*60).toUpperCase()}</div>`;
+    lines += `<div class="hline" style="top:${y}px"></div><div class="hline half" style="top:${y+30*ppm}px"></div>`;
+  }
+  const evs = day.events.map(e=>{
+    const top = (e.start-win.start)*ppm, hgt = Math.max(24,(e.end-e.start)*ppm);
+    const mk = getMark(cursor, e.src);
+    const done = mk && mk.done;
+    const short = hgt < 46;
+    return `<div class="ev ${done?'done':''} ${short?'short':''}" style="--c:${catColor(e.cat)};top:${top}px;height:${hgt}px"
+      data-src="${e.src}" data-start="${m2t(e.start)}" data-end="${m2t(e.end)}" data-cat="${e.cat}"
+      data-title="${esc(e.title)}" tabindex="0" role="button" aria-pressed="${!!done}">
+      <span class="eico">${CAT[e.cat].icon}</span>
+      <div class="ebody">
+        <div class="etitle">${esc(e.title)}${e.part?` <span class="mono" style="color:var(--graphite-dim);font-size:11px">${e.part}</span>`:''}</div>
+        <div class="etime">${clock(e.start)}–${clock(e.end)}${e.moved?' · moved':''}${
+          e.place?` · ${esc(e.place)}`:''}${e.note?` · ${esc(e.note)}`:''}</div>
+      </div>
+      <button class="edit" data-edit="${e.src}" aria-label="Edit ${esc(e.title)}">✎</button>
+    </div>`;
+  }).join('');
+  let now='';
+  if(cursor===TODAY){
+    const n = new Date().getHours()*60 + new Date().getMinutes();
+    const nn = n < win.start ? n+1440 : n;
+    if(nn>=win.start && nn<=win.end) now = `<div class="nowline" id="nowline" style="top:${(nn-win.start)*ppm}px"><b>NOW</b></div>`;
+  }
+  return navbar(`${DOW[d.getDay()]}, ${MON[d.getMonth()]} ${d.getDate()}`,
+    `${dur(day.busy)} committed · ${dur(Math.max(0,day.free))} open`)
+  + `<div class="dayGrid">
+      <div class="ruler" style="height:${H}px"><div class="gutter">${ticks}</div>
+        <div class="track">${lines}${evs}${now}</div></div>
+      <div class="side">${sidePanel(day)}</div>
+    </div>`;
+}
+function scrollToNow(){ const n=document.getElementById('nowline');
+  if(n) n.scrollIntoView({block:'center',behavior:'instant'}); }
+
+function sidePanel(day){
+  const byCat = {};
+  day.events.forEach(e=>{ byCat[e.cat]=(byCat[e.cat]||0)+(e.end-e.start); });
+  const span = day.win.end - day.win.start;
+  const load = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([c,m])=>
+    `<div class="stat"><span>${CAT[c].icon} ${CAT[c].label}</span><b>${dur(m)}</b></div>
+     <div class="bar" style="--c:${catColor(c)}"><i style="width:${(m/span*100).toFixed(1)}%"></i></div>`).join('');
+
+  const over = day.overload;
+  const banner = over ? `<div class="card" style="border-color:rgba(240,100,95,.45)">
+      <h3 style="color:var(--red)">This day does not fit</h3>
+      <p style="font-size:13.5px;color:var(--graphite);margin-bottom:10px">${
+        over.over > 0
+        ? `You have asked for ${dur(over.asked)} inside a ${dur(over.room)} day — ${dur(over.over)} more than exists.
+           Gaja moved and shortened everything it could, then left ${over.lost} item${over.lost>1?'s':''} out rather than double-book you.`
+        : `Two commitments that cannot move want the same hours. Nothing was double-booked, so ${over.lost}
+           item${over.lost>1?'s were':' was'} left off. Change one of them, or drop its priority.`}</p>
+      <div class="hint">Fixes: move the times, cut a session shorter, or lower a priority so it can slide.</div>
+    </div>` : '';
+  const notes = day.conflicts.length ? `<div class="card"><h3>Adjustments <em>${day.conflicts.length}</em></h3>
+    ${day.conflicts.map(c=>`<div class="note ${c.kind==='drop'||c.kind==='clash'?'warn':''}"><b>${
+      CAT[c.item.cat].icon} ${esc(c.item.title)}</b>${esc(c.why)}</div>`).join('')}
+    </div>` : '';
+  const conf = banner + notes;
+
+  const sugg = day.gaps.filter(g=>!S.dismissed[cursor+'|'+g.s]).map(g=>{
+    const goal = S.goals.find(x=>x.kind==='assessment' && cursor<x.deadline && studyProgress(x).pct<1);
+    return `<div class="note"><b>${dur(g.e-g.s)} open · ${clock(g.s)}–${clock(g.e)}</b>
+      ${goal?`You are ${Math.round((1-studyProgress(goal).pct)*100)}% out from ${esc(goal.title)}. Pulling study into this block finishes it sooner.`
+            :'A block this size is where a hobby actually survives.'}
+      <div class="act">
+        ${goal?`<button data-sugg="study:${goal.id}:${g.s}">Study here</button>`:''}
+        <button data-sugg="hobby:${g.s}:${g.e}">Add a hobby</button>
+        <button data-sugg="dismiss:${g.s}">Not today</button>
+      </div></div>`;
+  }).join('');
+
+  const goals = S.goals.filter(g=>g.kind==='assessment' && cursor<=g.deadline).map(g=>{
+    const p = studyProgress(g), left = daysBetween(cursor, g.deadline);
+    return `<div class="stat"><span>${esc(g.title)}</span><b>${left}d</b></div>
+      <div class="bar" style="--c:var(--assessment)"><i style="width:${(p.pct*100).toFixed(0)}%"></i></div>
+      <div class="hint">${dur(p.done)} logged of ${dur(p.total)} · today's target ${dur(studyMap(g)[cursor]||0)}</div>`;
+  }).join('');
+
+  return conf
+    + (sugg?`<div class="card"><h3>Open ground</h3>${sugg}</div>`:'')
+    + (goals?`<div class="card"><h3>Countdown</h3>${goals}</div>`:'')
+    + `<div class="card"><h3>Where the day goes</h3>${load||'<div class="hint">Nothing scheduled.</div>'}</div>`;
+}
+
+/* ---------------- MONTH ---------------- */
+function monthView(d){
+  const first = new Date(d.getFullYear(), d.getMonth(), 1);
+  const start = addDays(first, -first.getDay());
+  let cells='';
+  for(let i=0;i<42;i++){
+    const cd = addDays(start,i), ds = iso(cd), out = cd.getMonth()!==d.getMonth();
+    const day = out ? null : buildDay(ds);
+    const evs = day ? day.events.filter(e=>e.cat!=='travel') : [];
+    cells += `<button class="mcell ${out?'out':''} ${ds===TODAY?'today':''} ${ds===cursor?'sel':''}" data-day="${ds}">
+      <span class="dn">${cd.getDate()}</span>
+      ${evs.slice(0,3).map(e=>`<span class="mchip" style="--c:${catColor(e.cat)}"><i></i>${esc(e.title)}</span>`).join('')}
+      ${evs.length>3?`<div class="mmore">+${evs.length-3} more</div>`:''}
+    </button>`;
+  }
+  return navbar(`${MON[d.getMonth()]} ${d.getFullYear()}`, 'Tap a day to open it')
+    + `<div class="mgrid"><div class="mhead">${DOW.map(n=>`<div>${n}</div>`).join('')}</div>
+       <div class="mrow">${cells}</div></div>`;
+}
+
+/* ---------------- YEAR ---------------- */
+function milestones(){
+  const m = {};
+  const put = (ds,cat,label) => { (m[ds] = m[ds]||[]).push({cat,label}); };
+  S.goals.forEach(g=>put(g.deadline, g.cat, g.title));
+  S.rules.filter(r=>r.cat==='special').forEach(r=>{
+    for(let i=0;i<400;i++){ const cd=addDays(new Date(),i), ds=iso(cd);
+      if(fires(r,ds,cd)) put(ds,'special',r.title); }
+  });
+  return m;
+}
+function yearView(d){
+  const Y = d.getFullYear(), M = milestones();
+  const months = MON.map((name,mi)=>{
+    const first = new Date(Y,mi,1), start = addDays(first,-first.getDay());
+    let n = 0, cells='';
+    for(let i=0;i<42;i++){
+      const cd = addDays(start,i), ds = iso(cd);
+      if(cd.getMonth()!==mi){ cells += `<div class="yc out"></div>`; continue; }
+      const hit = M[ds];
+      if(hit) n++;
+      cells += `<div class="yc ${hit?'mark':''} ${ds===TODAY?'today':''}"
+        ${hit?`style="--c:${catColor(hit[0].cat)}" title="${esc(hit.map(x=>x.label).join(', '))}"`:''}>${cd.getDate()}</div>`;
+    }
+    return `<button class="ym" data-month="${Y}-${pad(mi+1)}-01">
+      <h4>${name}<span>${n?n+' marked':''}</span></h4><div class="ycells">${cells}</div></button>`;
+  }).join('');
+  return navbar(String(Y), 'Deadlines, tournaments and annual reminders')
+    + `<div class="ygrid">${months}</div>`;
+}
+
+/* ============================================================
+   INTERACTION
+   ============================================================ */
+const layer = () => document.getElementById('layer');
+function closeModal(){ layer().innerHTML=''; }
+function modal({title, body, foot}){
+  layer().innerHTML = `<div class="scrim"><div class="modal" role="dialog" aria-modal="true" aria-label="${esc(title)}">
+    <div class="modal-h"><h3>${esc(title)}</h3><button class="iconbtn" data-close aria-label="Close">✕</button></div>
+    <div class="modal-b">${body}</div>${foot?`<div class="modal-f">${foot}</div>`:''}</div></div>`;
+  layer().querySelector('.scrim').addEventListener('mousedown', e=>{ if(e.target.classList.contains('scrim')) closeModal(); });
+  layer().querySelector('[data-close]').onclick = closeModal;
+  const f = layer().querySelector('input,select,button'); if(f) f.focus();
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+function toast(msg){
+  const t = document.createElement('div'); t.className='toast'; t.textContent=msg;
+  document.body.appendChild(t); setTimeout(()=>t.remove(), 2600);
+}
+const commit = () => { bump(); save(); paint(); };
+
+/* ---------- find whatever a scheduled block came from ---------- */
+function source(src){
+  src = src.replace(/:t\d$/,'');
+  const r = S.rules.find(x=>x.id===src); if(r) return {kind:'rule', o:r};
+  const g = S.goals.find(x=>x.id===src); if(g) return {kind:'goal', o:g};
+  if(/^meal\d+$/.test(src)) return {kind:'meal', o:S.profile.meals[Number(src.slice(4))], idx:Number(src.slice(4))};
+  return null;
+}
+
+/* ---------- edit ---------- */
+function openEdit(src, date){
+  const s = source(src);
+  if(!s) return toast('Travel blocks follow the event they belong to.');
+  const repeating = (s.kind==='rule' && s.o.repeat!=='once') || s.kind==='meal'
+                 || (s.kind==='goal' && s.o.kind==='assessment');
+  if(!repeating) return editSeries(src, date);
+  modal({ title:'Edit which?', body:`
+    <button class="pick" data-scope="one"><b>This day only</b><small>${date} keeps its own times. Every other ${
+      s.kind==='goal'?'study session':'occurrence'} stays as it is.</small></button>
+    <button class="pick" data-scope="all"><b>Every one of these</b><small>Changes the whole series from here on.</small></button>`});
+  layer().querySelectorAll('[data-scope]').forEach(b => b.onclick = () =>
+    b.dataset.scope==='one' ? editInstance(src,date) : editSeries(src,date));
+}
+
+function editInstance(src, date){
+  const day = buildDay(date), ev = day.events.find(e=>e.src===src);
+  const mk = getMark(date,src) || {};
+  const tmp = { title: mk.title || (ev?ev.title:''), start: m2t(ev?ev.start:540), end: m2t(ev?ev.end:600) };
+  modal({ title:`${date} only`,
+    body: F(tmp,{k:'title',t:'text',label:'Title'}) + ROW(F(tmp,{k:'start',t:'time',label:'Starts'}),F(tmp,{k:'end',t:'time',label:'Ends'})),
+    foot: `<button class="btn danger" data-skip>Skip this day</button><div class="spacer"></div>
+           <button class="btn" data-close2>Cancel</button><button class="btn primary" data-save>Save</button>` });
+  layer().querySelector('[data-close2]').onclick = closeModal;
+  layer().querySelector('[data-skip]').onclick = () => {
+    S.marks[markKey(date,src)] = Object.assign({}, mk, {skipped:true}); closeModal(); commit(); toast('Removed from this day.'); };
+  layer().querySelector('[data-save]').onclick = () => {
+    if(t2m(tmp.end) <= t2m(tmp.start)) return toast('The end time has to come after the start.');
+    S.marks[markKey(date,src)] = Object.assign({}, mk, {title:tmp.title, start:tmp.start, end:tmp.end, skipped:false});
+    closeModal(); commit(); toast('This day updated.'); };
+}
+
+function editSeries(src, date){
+  const s = source(src);
+  if(s.kind==='goal'){
+    const key = s.o.kind==='assessment' ? 'assessment' : 'tournament';
+    const tmp = Object.assign({}, s.o);
+    modal({ title:`Edit ${s.o.title||'goal'}`, body: SCHEMA[key].form(tmp),
+      foot:`<button class="btn danger" data-del2>Delete</button><div class="spacer"></div>
+            <button class="btn primary" data-save>Save</button>` });
+    layer().querySelector('[data-save]').onclick = () => {
+      Object.assign(s.o, tmp, {hours:Number(tmp.hours)||1, maxDaily:Number(tmp.maxDaily)||1, pri:Number(tmp.pri)||1});
+      closeModal(); commit(); toast('Series updated.'); };
+    layer().querySelector('[data-del2]').onclick = () => {
+      S.goals = S.goals.filter(g=>g!==s.o); closeModal(); commit(); toast('Deleted.'); };
+    return;
+  }
+  if(s.kind==='meal'){
+    const m = s.o, tmp = Object.assign({}, m);
+    modal({ title:`Edit ${m.name}`,
+      body: ROW(F(tmp,{k:'name',t:'text',label:'Name'}),F(tmp,{k:'time',t:'time',label:'Time'}),F(tmp,{k:'len',t:'num',label:'Minutes',min:5,max:180}))
+        + `<div class="hint">Leave the time empty to let Gaja place it in the day's gaps.</div>`,
+      foot:`<div class="spacer"></div><button class="btn primary" data-save>Save</button>` });
+    layer().querySelector('[data-save]').onclick = () => {
+      Object.assign(m, tmp); if(m.time) S.profile.autoMeals=false; closeModal(); commit(); toast('Meal updated.'); };
+    return;
+  }
+  const r = s.o, tmp = Object.assign({}, r, {len: t2m(r.end)-t2m(r.start)});
+  const isTimed = r.cat!=='habit';
+  modal({ title:`Edit ${r.title}`,
+    body: F(tmp,{k:'title',t:'text',label:'Title'})
+      + (r.repeat==='weekly' ? F(tmp,{k:'days',t:'days',label:'Days'}) : `<div class="hint">Repeats ${r.repeat}.</div>`)
+      + ROW(F(tmp,{k:'start',t:'time',label:'Starts'}), isTimed?F(tmp,{k:'end',t:'time',label:'Ends'}):F(tmp,{k:'len',t:'num',label:'Minutes',min:5}))
+      + (r.mode ? modeField(tmp)+travelFields(tmp) : '')
+      + F(tmp,{k:'pri',t:'pri',label:'Priority'}),
+    foot:`<button class="btn danger" data-del2>Delete series</button><div class="spacer"></div>
+          <button class="btn primary" data-save>Save</button>` });
+  layer().querySelector('[data-save]').onclick = () => {
+    const end = isTimed ? tmp.end : m2t(t2m(tmp.start)+(Number(tmp.len)||15));
+    if(t2m(end) === t2m(tmp.start)) return toast('Give it some length.');
+    const trav = r.mode ? entryTravel(tmp, t2m(tmp.start)) : 0;
+    Object.assign(r, {title:tmp.title, days:tmp.days, start:tmp.start, end, pri:Number(tmp.pri)||r.pri,
+      mode:tmp.mode, miles:tmp.miles, vmin:tmp.vmin, place:tmp.place,
+      travelBefore:trav, travelAfter:trav});
+    closeModal(); commit(); toast('Series updated.'); };
+  layer().querySelector('[data-del2]').onclick = () => {
+    S.rules = S.rules.filter(x=>x!==r); closeModal(); commit(); toast('Deleted.'); };
+}
+
+/* ---------- add ---------- */
+const ADDABLE = ['work','class','health','assessment','tournament','special','habit','hobby'];
+function openAdd(preset){
+  modal({ title:'What kind of event?', body:`<div class="catgrid">${ADDABLE.map(k=>
+    `<button data-cat="${k}" style="--c:${catColor(SCHEMA[k].cat)}"><span>${CAT[SCHEMA[k].cat].icon}</span><b>${CAT[SCHEMA[k].cat].label}</b></button>`).join('')}</div>`});
+  layer().querySelectorAll('[data-cat]').forEach(b => b.onclick = () => addForm(b.dataset.cat, preset));
+  if(preset && preset.cat) addForm(preset.cat, preset);
+}
+function addForm(key, preset, problems){
+  const e = addForm.draft && addForm.key===key ? addForm.draft : Object.assign(SCHEMA[key].blank(), preset&&preset.fields||{});
+  addForm.draft = e; addForm.key = key;
+  modal({ title:SCHEMA[key].add,
+    body: (problems?`<div class="err"><b>Cannot fit this in</b>${problems.map(p=>
+            `${p.date}: ${esc(p.why)}`).join('<br>')}<br><br>Lower another item's priority, shorten this one, or pick a different time.</div>`:'')
+      + SCHEMA[key].form(e),
+    foot:`<div class="spacer"></div><button class="btn" data-back>Back</button><button class="btn primary" data-save>Check and add</button>` });
+  layer().querySelector('[data-back]').onclick = () => { addForm.draft=null; openAdd(); };
+  layer().querySelector('[data-save]').onclick = () => {
+    if(!String(e.title||'').trim()) return toast('Give it a name first.');
+    if(SCHEMA[key].cat!=='assessment' && SCHEMA[key].cat!=='special' && 'days' in e && !(e.days||[]).length)
+      return toast('Pick at least one day.');
+    const res = tryAdd(key, e);
+    if(res.ok){ addForm.draft=null; closeModal(); save(); paint(); toast('Added — the schedule rebuilt around it.'); }
+    else addForm(key, null, res.problems);
+  };
+}
+/* the feasibility gate: add it, look at the next ~45 live days, roll back if it never fits */
+function tryAdd(key, e){
+  const built = draftToItems(Object.assign(newDraft(), {[key]:[e]}));
+  const ids = [...built.rules, ...built.goals].map(x=>x.id);
+  S.rules.push(...built.rules); S.goals.push(...built.goals); bump();
+  const problems = []; let seen = 0;
+  for(let i=0; i<420 && seen<45 && problems.length<3; i++){
+    const ds = iso(addDays(new Date(), i));
+    const day = buildDay(ds);
+    const mine = day.events.some(x=>ids.includes(x.parent||x.src));
+    const bad  = day.conflicts.filter(c=>ids.includes(c.item.src) && c.kind==='clash');
+    if(mine || bad.length) seen++;
+    if(bad.length) problems.push({date:ds, why:bad[0].why});
+  }
+  if(!seen) problems.push({date:'Never', why:'This event never lands on a day inside the next year.'});
+  if(problems.length){
+    S.rules = S.rules.filter(r=>!ids.includes(r.id));
+    S.goals = S.goals.filter(g=>!ids.includes(g.id));
+    bump();
+  }
+  return {ok:!problems.length, problems};
+}
+
+/* ---------- settings ---------- */
+function openSettings(){
+  const P = S.profile, tmp = Object.assign({}, P);
+  modal({ title:'Your day', body:
+      ROW(F(tmp,{k:'wake',t:'time',label:'Wake up'}), F(tmp,{k:'sleep',t:'time',label:'Sleep'}))
+    + F(tmp,{k:'name',t:'text',label:'Name'})
+    + F(tmp,{k:'mealAtWork',t:'check',label:'A meal can sit inside work hours'})
+    + `<div class="hint">Meals, work, classes and everything else are edited straight from the day view — click the ✎ on any block.</div>`,
+    foot:`<button class="btn danger" data-reset>Start over</button><div class="spacer"></div>
+          <button class="btn primary" data-save>Save</button>` });
+  layer().querySelector('[data-save]').onclick = () => { Object.assign(P, tmp); closeModal(); commit(); };
+  layer().querySelector('[data-reset]').onclick = async () => {
+    await store.del(KEY); S=blank(); D=newDraft(); step=0; closeModal(); renderOnboard(); };
+}
+
+/* ---------- wiring ---------- */
+function wire(){
+  document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { view=b.dataset.view; paint(); });
+  document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => {
+    const v = b.dataset.nav;
+    if(v==='today') cursor = TODAY;
+    else { const n = Number(v), d = parseISO(cursor);
+      if(view==='day') cursor = iso(addDays(d,n));
+      if(view==='month') cursor = iso(new Date(d.getFullYear(), d.getMonth()+n, 1));
+      if(view==='year') cursor = iso(new Date(d.getFullYear()+n, d.getMonth(), 1)); }
+    paint(); });
+  const add = () => openAdd();
+  const ab = document.getElementById('addBtn'); if(ab) ab.onclick = add;
+  const fb = document.getElementById('fab'); if(fb) fb.onclick = add;
+  const sb = document.getElementById('setBtn'); if(sb) sb.onclick = openSettings;
+  document.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { cursor=b.dataset.day; view='day'; paint(); });
+  document.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { cursor=b.dataset.month; view='month'; paint(); });
+
+  document.querySelectorAll('.ev').forEach(el => {
+    const toggle = () => {
+      const src = el.dataset.src, mk = getMark(cursor,src) || {};
+      const on = !mk.done;
+      S.marks[markKey(cursor,src)] = Object.assign(mk, {done:on,
+        mins: t2m(el.dataset.end) - t2m(el.dataset.start)});
+      el.classList.toggle('done', on);
+      el.setAttribute('aria-pressed', String(on));
+      if(on){ el.classList.add('swipe'); setTimeout(()=>el.classList.remove('swipe'), 520); }
+      bump(); save();
+    };
+    el.onclick = ev => { if(ev.target.closest('[data-edit]')) return; toggle(); };
+    el.onkeydown = ev => { if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); toggle(); } };
+  });
+  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = ev => {
+    ev.stopPropagation(); openEdit(b.dataset.edit, cursor); });
+
+  document.querySelectorAll('[data-sugg]').forEach(b => b.onclick = () => {
+    const [what,a,c] = b.dataset.sugg.split(':');
+    if(what==='dismiss'){ S.dismissed[cursor+'|'+a]=1; save(); paint(); return; }
+    if(what==='study'){
+      const g = S.goals.find(x=>x.id===a), mins = studyMap(g)[cursor] || 60;
+      S.marks[markKey(cursor,g.id)] = Object.assign(getMark(cursor,g.id)||{}, {start:m2t(Number(c)), end:m2t(Number(c)+mins)});
+      commit(); toast('Study moved into the open block.'); return;
+    }
+    if(what==='hobby'){
+      openAdd({cat:'hobby', fields:{days:[parseISO(cursor).getDay()], start:m2t(Number(a)), end:m2t(Number(c))}});
+    }
+  });
+}
+
+/* ---------- boot ---------- */
+function mount(){ view='day'; cursor=TODAY; paint(); }
+(async function boot(){
+  const saved = await store.get(KEY);
+  if(saved && saved.profile){ S = saved; bump(); mount(); }
+  else { S = blank(); D = newDraft(); renderOnboard(); }
+})();
+</script>
+</body>
+</html>
