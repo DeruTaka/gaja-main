@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { CAT, catColor, DOW, MON } from '../categories.js';
+import { CAT, catColor, DOW, MON, filterHidden } from '../categories.js';
 import { clock, dur, t2m, m2t, esc, TODAY, daysBetween } from '../utils.js';
 import { buildDay, getMark, studyMap, studyProgress } from '../engine.js';
 import { navbar, PPM } from './paint.js';
@@ -16,7 +16,8 @@ export function dayView(d) {
     ticks += `<div class="tick" style="top:${y}px">${clock(h * 60).toUpperCase()}</div>`;
     lines += `<div class="hline" style="top:${y}px"></div><div class="hline half" style="top:${y + 30 * ppm}px"></div>`;
   }
-  const evs = day.events.map(e => {
+  const visible = filterHidden(day.events, state.S.profile.hiddenCats);
+  const evs = visible.map(e => {
     const top = (e.start - win.start) * ppm, hgt = Math.max(24, (e.end - e.start) * ppm);
     const mk = getMark(state.cursor, e.src);
     const done = mk && mk.done;
@@ -44,7 +45,7 @@ export function dayView(d) {
   + `<div class="dayGrid">
       <div class="ruler" style="height:${H}px"><div class="gutter">${ticks}</div>
         <div class="track">${lines}${evs}${now}</div></div>
-      <div class="side">${sidePanel(day)}</div>
+      <div class="side">${sidePanel(day, visible)}</div>
     </div>`;
 }
 export function scrollToNow() {
@@ -52,9 +53,9 @@ export function scrollToNow() {
   if (n) n.scrollIntoView({ block: 'center', behavior: 'instant' });
 }
 
-export function sidePanel(day) {
+export function sidePanel(day, visible = day.events) {
   const byCat = {};
-  day.events.forEach(e => { byCat[e.cat] = (byCat[e.cat] || 0) + (e.end - e.start); });
+  visible.forEach(e => { byCat[e.cat] = (byCat[e.cat] || 0) + (e.end - e.start); });
   const span = day.win.end - day.win.start;
   const load = Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([c, m]) =>
     `<div class="stat"><span>${CAT[c].icon} ${CAT[c].label}</span><b>${dur(m)}</b></div>

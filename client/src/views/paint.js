@@ -4,6 +4,7 @@ import { dayView, scrollToNow } from './day.js';
 import { monthView } from './month.js';
 import { yearView } from './year.js';
 import { wire } from '../wire.js';
+import { categoryRail } from '../ui/categoryRail.js';
 
 export const PPM = () => innerWidth < 640 ? .85 : 1.05;
 
@@ -19,7 +20,8 @@ export function paint() {
     <button class="iconbtn" id="setBtn" title="Settings" aria-label="Settings">⚙</button>
   </div></div></header>`;
   const body = state.view === 'day' ? dayView(d) : state.view === 'month' ? monthView(d) : yearView(d);
-  document.getElementById('root').innerHTML = head + `<div class="wrap">${body}</div>
+  document.body.classList.add('has-rail');
+  document.getElementById('root').innerHTML = head + categoryRail() + `<div class="wrap">${body}</div>
     <button class="fab" id="fab" aria-label="Add event">+</button>`;
   wire();
   if (state.view === 'day') requestAnimationFrame(scrollToNow);

@@ -3,8 +3,10 @@ import { STEPS, finish } from './steps.js';
 import { SCHEMA } from '../schema.js';
 import { rerenderHook } from '../ui/rerender.js';
 import { mount } from '../views/paint.js';
+import { toast } from '../ui/modal.js';
 
 export function renderOnboard() {
+  document.body.classList.remove('has-rail');
   const st = STEPS[state.step];
   document.getElementById('root').innerHTML = `
   <div class="ob">
@@ -27,6 +29,7 @@ export function renderOnboard() {
   </div>`;
   document.getElementById('back').onclick = () => { state.step = Math.max(0, state.step - 1); renderOnboard(); };
   document.getElementById('next').onclick = () => {
+    if (st.required && !state.D[st.required].length) { toast(st.requiredMsg || 'Add at least one before continuing.'); return; }
     if (state.step === STEPS.length - 1) { finish(); mount(); return; }
     state.step++; renderOnboard();
   };

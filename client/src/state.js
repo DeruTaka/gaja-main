@@ -20,7 +20,7 @@ export const state = {
 
 export const blank = () => ({
   profile: { name: '', place: '', hasPlace: false, wake: '07:00', sleep: '23:00',
-             meals: [], autoMeals: true, mealCount: 3, mealAtWork: true },
+             meals: [], autoMeals: true, mealCount: 3, mealAtWork: true, hiddenCats: [] },
   rules: [], goals: [], marks: {}, dismissed: {}, created: TODAY,
 });
 

@@ -38,12 +38,14 @@ export const STEPS = [
   },
 
   {
-    no: 'Step 3', title: 'Work', lede: 'Fixed hours that cannot shrink. Priority 1 by default.',
+    no: 'Step 3', title: 'Work', required: 'work', requiredMsg: 'Add at least one job before continuing.',
+    lede: 'Fixed hours that cannot shrink. Priority 1 by default. Required — add at least one.',
     render: () => collection('work', state.D.work, { empty: 'No job to schedule around.' }),
   },
 
   {
-    no: 'Step 4', title: 'Classes', lede: 'Same idea as work: these hold their slot no matter what else wants it.',
+    no: 'Step 4', title: 'Classes', required: 'class', requiredMsg: 'Add at least one class before continuing.',
+    lede: 'Same idea as work: these hold their slot no matter what else wants it. Required — a name is optional, but add at least one.',
     render: () => collection('class', state.D.class, { empty: 'Not in school right now.' }),
   },
 
@@ -56,35 +58,24 @@ export const STEPS = [
   },
 
   {
-    no: 'Step 6', title: 'Health', lede: 'Gym, sport, physio, a walk. Repetitive by design — but Gaja will trade a session away when an exam is close.',
-    render: () => collection('health', state.D.health, { empty: 'No standing activity yet.' }),
-  },
-
-  {
-    no: 'Step 7', title: 'Assessments', lede: 'Exams and certifications. Give the total hours you need; Gaja divides them across the days you have left and re-divides whenever you miss one.',
+    no: 'Step 6', title: 'Assessments', required: 'assessment', requiredMsg: 'Add at least one exam or certification before continuing.',
+    lede: 'Exams and certifications. Give the total hours you need; Gaja divides them across the days you have left and re-divides whenever you miss one. Required — add at least one.',
     render: () => collection('assessment', state.D.assessment, { empty: 'Nothing on the calendar to study for.' }),
   },
 
   {
-    no: 'Step 8', title: 'Tournaments', lede: 'A date you have to be ready for, plus the practices leading to it.',
-    render: () => collection('tournament', state.D.tournament, { empty: 'No competition dates.' }),
-  },
-
-  {
-    no: 'Step 9', title: 'Reminders', lede: 'The once-a-year things that are easy to forget: physical, dentist, safety and emissions inspection, birthdays.',
-    render: () => collection('special', state.D.special, { empty: 'Nothing to remember yet.' })
-      + `<div class="hint" style="margin-top:12px">Common ones: ${['Annual physical', 'Dentist', 'Safety inspection', 'Emissions inspection', 'VIN inspection']
-        .map(n => `<button class="chip" data-quick="${n}" style="margin:4px 4px 0 0">+ ${n}</button>`).join('')}</div>`,
-  },
-
-  {
-    no: 'Step 10', title: 'Daily habits', lede: 'Small anchors — shower, coffee, stretching. They give the rest of the day something to sit against.',
-    render: () => collection('habit', state.D.habit, { empty: 'No habits tracked.' }),
-  },
-
-  {
-    no: 'Step 11', title: 'Hobbies', lede: 'The first thing to bend when the week gets tight, and the first thing Gaja offers back when it loosens.',
-    render: () => collection('hobby', state.D.hobby, { empty: 'No hobbies scheduled.' }),
+    no: 'Step 7', title: 'Anything else?',
+    lede: 'All optional — health, tournaments, reminders, daily habits, hobbies. Add what applies, skip the rest.',
+    render: () => [
+      ['health', 'Health', 'No standing activity yet.'],
+      ['tournament', 'Tournaments', 'No competition dates.'],
+      ['special', 'Reminders', 'Nothing to remember yet.'],
+      ['habit', 'Daily habits', 'No habits tracked.'],
+      ['hobby', 'Hobbies', 'No hobbies scheduled.'],
+    ].map(([key, label, empty], i) => `<div class="subhead"${i === 0 ? ' style="border-top:0;padding-top:0"' : ''}>${label}</div>`
+        + collection(key, state.D[key], { empty })
+        + (key === 'special' ? `<div class="hint" style="margin:-4px 0 12px">Common ones: ${['Annual physical', 'Dentist', 'Safety inspection', 'Emissions inspection', 'VIN inspection']
+          .map(n => `<button class="chip" data-quick="${n}" style="margin:4px 4px 0 0">+ ${n}</button>`).join('')}</div>` : '')).join(''),
   },
 
   {

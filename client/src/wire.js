@@ -6,6 +6,7 @@ import { commit, toast } from './ui/modal.js';
 import { openAdd } from './edit/add.js';
 import { openSettings } from './settings.js';
 import { openEdit } from './edit/source.js';
+import { wireDrag } from './edit/drag.js';
 import { paint } from './views/paint.js';
 
 /* ---------- wiring ---------- */
@@ -21,7 +22,23 @@ export function wire() {
       if (state.view === 'year') state.cursor = iso(new Date(d.getFullYear() + n, d.getMonth(), 1));
     }
     paint();
+    // month/year views can be taller than the viewport — jumping to today changes
+    // the underlying data, but without this the page can stay scrolled to wherever
+    // it was, making the click look like it did nothing. Day view already scrolls
+    // to "now" on every paint, so it doesn't need this.
+    if (v === 'today' && state.view !== 'day') {
+      requestAnimationFrame(() => document.querySelector('.mcell.today, .yc.today')?.scrollIntoView({ block: 'center', behavior: 'instant' }));
+    }
   });
+  document.querySelectorAll('[data-cat-toggle]').forEach(b => b.onclick = () => {
+    const c = b.dataset.catToggle;
+    const P = state.S.profile;
+    P.hiddenCats = P.hiddenCats || [];
+    const i = P.hiddenCats.indexOf(c);
+    i < 0 ? P.hiddenCats.push(c) : P.hiddenCats.splice(i, 1);
+    save(); paint(); // display-only filter — no bump(), the schedule itself never changes
+  });
+
   const add = () => openAdd();
   const ab = document.getElementById('addBtn'); if (ab) ab.onclick = add;
   const fb = document.getElementById('fab'); if (fb) fb.onclick = add;
@@ -31,6 +48,7 @@ export function wire() {
 
   document.querySelectorAll('.ev').forEach(el => {
     const toggle = () => {
+      if (el.dataset.justDragged) { delete el.dataset.justDragged; return; } // the trailing click after a real drag isn't a toggle
       const src = el.dataset.src, mk = getMark(state.cursor, src) || {};
       const on = !mk.done;
       state.S.marks[markKey(state.cursor, src)] = Object.assign(mk, {
@@ -61,4 +79,6 @@ export function wire() {
       openAdd({ cat: 'hobby', fields: { days: [parseISO(state.cursor).getDay()], start: m2t(Number(a)), end: m2t(Number(c)) } });
     }
   });
+
+  wireDrag();
 }

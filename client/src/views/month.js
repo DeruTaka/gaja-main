@@ -8,11 +8,12 @@ import { navbar } from './paint.js';
 export function monthView(d) {
   const first = new Date(d.getFullYear(), d.getMonth(), 1);
   const start = addDays(first, -first.getDay());
+  const hidden = state.S.profile.hiddenCats || [];
   let cells = '';
   for (let i = 0; i < 42; i++) {
     const cd = addDays(start, i), ds = iso(cd), out = cd.getMonth() !== d.getMonth();
     const day = out ? null : buildDay(ds);
-    const evs = day ? day.events.filter(e => e.cat !== 'travel') : [];
+    const evs = day ? day.events.filter(e => e.cat !== 'travel' && !hidden.includes(e.cat)) : [];
     cells += `<button class="mcell ${out ? 'out' : ''} ${ds === TODAY ? 'today' : ''} ${ds === state.cursor ? 'sel' : ''}" data-day="${ds}">
       <span class="dn">${cd.getDate()}</span>
       ${evs.slice(0, 3).map(e => `<span class="mchip" style="--c:${catColor(e.cat)}"><i></i>${esc(e.title)}</span>`).join('')}
