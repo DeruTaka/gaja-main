@@ -38,14 +38,12 @@ export const STEPS = [
   },
 
   {
-    no: 'Step 3', title: 'Work', required: 'work', requiredMsg: 'Add at least one job before continuing.',
-    lede: 'Fixed hours that cannot shrink. Priority 1 by default. Required — add at least one.',
+    no: 'Step 3', title: 'Work', lede: 'Fixed hours that cannot shrink. Priority 1 by default. Optional — skip it if it doesn\'t apply.',
     render: () => collection('work', state.D.work, { empty: 'No job to schedule around.' }),
   },
 
   {
-    no: 'Step 4', title: 'Classes', required: 'class', requiredMsg: 'Add at least one class before continuing.',
-    lede: 'Same idea as work: these hold their slot no matter what else wants it. Required — a name is optional, but add at least one.',
+    no: 'Step 4', title: 'Classes', lede: 'Same idea as work: these hold their slot no matter what else wants it. A name is optional.',
     render: () => collection('class', state.D.class, { empty: 'Not in school right now.' }),
   },
 
@@ -58,37 +56,19 @@ export const STEPS = [
   },
 
   {
-    no: 'Step 6', title: 'Assessments', required: 'assessment', requiredMsg: 'Add at least one exam or certification before continuing.',
-    lede: 'Exams and certifications. Give the total hours you need; Gaja divides them across the days you have left and re-divides whenever you miss one. Required — add at least one.',
+    no: 'Step 6', title: 'Assessments', lede: 'Exams and certifications. Give the total hours you need; Gaja divides them across the days you have left and re-divides whenever you miss one. Optional — skip it if nothing applies yet.',
     render: () => collection('assessment', state.D.assessment, { empty: 'Nothing on the calendar to study for.' }),
   },
 
   {
-    no: 'Step 7', title: 'Anything else?',
-    lede: 'All optional — health, tournaments, reminders, daily habits, hobbies. Add what applies, skip the rest.',
-    render: () => [
-      ['health', 'Health', 'No standing activity yet.'],
-      ['tournament', 'Tournaments', 'No competition dates.'],
-      ['special', 'Reminders', 'Nothing to remember yet.'],
-      ['habit', 'Daily habits', 'No habits tracked.'],
-      ['hobby', 'Hobbies', 'No hobbies scheduled.'],
-    ].map(([key, label, empty], i) => `<div class="subhead"${i === 0 ? ' style="border-top:0;padding-top:0"' : ''}>${label}</div>`
-        + collection(key, state.D[key], { empty })
-        + (key === 'special' ? `<div class="hint" style="margin:-4px 0 12px">Common ones: ${['Annual physical', 'Dentist', 'Safety inspection', 'Emissions inspection', 'VIN inspection']
-          .map(n => `<button class="chip" data-quick="${n}" style="margin:4px 4px 0 0">+ ${n}</button>`).join('')}</div>` : '')).join(''),
-  },
-
-  {
-    no: 'Last', title: 'Ready to build', lede: 'Gaja will lay out the next twelve months, resolve every collision by priority, and open on today.',
+    no: 'Last', title: 'Ready to build', lede: 'Gaja will lay out the next twelve months, resolve every collision by priority, and open on today. Health, tournaments, reminders, daily habits, and hobbies aren\'t here — add those anytime with "+ Add event" once your calendar exists.',
     render: () => {
       const n = k => state.D[k].length;
       const lines = [
         ['Waking hours', `${clock(t2m(state.S.profile.wake))} – ${clock(t2m(state.S.profile.sleep))}`],
         ['Work', n('work') ? `${n('work')} · ${state.D.work.map(e => daysLabel(e.days)).join(', ')}` : 'none'],
         ['Classes', n('class') || 'none'], ['Meals', state.S.profile.mealCount + ' a day'],
-        ['Health', n('health') || 'none'], ['Assessments', n('assessment') || 'none'],
-        ['Tournaments', n('tournament') || 'none'], ['Reminders', n('special') || 'none'],
-        ['Habits', n('habit') || 'none'], ['Hobbies', n('hobby') || 'none'],
+        ['Assessments', n('assessment') || 'none'],
       ];
       return `<div class="card">${lines.map(([a, b]) => `<div class="stat"><span>${a}</span><b>${String(b)}</b></div>`).join('')}</div>`;
     },

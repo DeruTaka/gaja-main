@@ -3,7 +3,6 @@ import { STEPS, finish } from './steps.js';
 import { SCHEMA } from '../schema.js';
 import { rerenderHook } from '../ui/rerender.js';
 import { mount } from '../views/paint.js';
-import { toast } from '../ui/modal.js';
 
 export function renderOnboard() {
   document.body.classList.remove('has-rail');
@@ -29,7 +28,6 @@ export function renderOnboard() {
   </div>`;
   document.getElementById('back').onclick = () => { state.step = Math.max(0, state.step - 1); renderOnboard(); };
   document.getElementById('next').onclick = () => {
-    if (st.required && !state.D[st.required].length) { toast(st.requiredMsg || 'Add at least one before continuing.'); return; }
     if (state.step === STEPS.length - 1) { finish(); mount(); return; }
     state.step++; renderOnboard();
   };
@@ -55,8 +53,6 @@ document.addEventListener('click', e => {
   const tg = e.target.closest('[data-toggle]');
   if (tg) {
     const [k, i] = tg.dataset.toggle.split(':'); const l = (state.D ? state.D[k] : pendingList(k));
-    const was = l[Number(i)]._open; l.forEach(x => x._open = false); l[Number(i)]._open = !was; rerenderHook.fn(); return;
+    const was = l[Number(i)]._open; l.forEach(x => x._open = false); l[Number(i)]._open = !was; rerenderHook.fn();
   }
-  const q = e.target.closest('[data-quick]');
-  if (q) { const o = SCHEMA.special.blank(); o.title = q.dataset.quick; o.repeat = 'Yearly'; state.D.special.push(o); rerenderHook.fn(); }
 });
