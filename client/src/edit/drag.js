@@ -25,9 +25,12 @@ import { modal, closeModal, layer, commit, toast } from '../ui/modal.js';
 const SNAP = 5; // minutes
 const THRESHOLD = 6; // px of movement before a press becomes a drag, not a click
 
-/* an item is a wall for a drag of priority `draggedPri` if it can never move
-   in real life, or if it outranks the thing trying to push it */
-const isWall = (g, draggedPri) => g.rigid || g.pri < draggedPri;
+/* an item is a wall for a drag of priority `draggedPri` if it can never move in
+   real life, if it's a block the day had to split into pieces (a rigid shift
+   carved around a meal, say) — its bounding box isn't one movable slot — if
+   it's itself carved into another block's timeframe (see `carved` below), or
+   if it outranks the thing trying to push it */
+const isWall = (g, draggedPri) => g.rigid || g.carved || g.pieces.length !== 1 || g.pri < draggedPri;
 
 /* ---------- group same-src pieces (a rigid block carved around a meal renders
    as 2-3 .ev elements sharing one src) into one logical block per src ---------- */
@@ -38,9 +41,11 @@ function collectGroups(els) {
     const pStart = t2m(el.dataset.start), pEnd = t2m(el.dataset.end);
     const pri = Number(el.dataset.pri) || 4;
     const rigid = !!(CAT[el.dataset.cat] && CAT[el.dataset.cat].rigid);
+    const carved = el.dataset.carved === '1'; // e.g. a lunch break carved into a workday — its slot
+    // is a placement artifact of the rigid block around it, not a timeframe of its own
     const piece = { el, start: pStart, end: pEnd, origTop: parseFloat(el.style.top) };
     const g = groups.get(src);
-    if (!g) groups.set(src, { src, start: pStart, end: pEnd, pri, rigid, pieces: [piece] });
+    if (!g) groups.set(src, { src, start: pStart, end: pEnd, pri, rigid, carved, pieces: [piece] });
     else { g.start = Math.min(g.start, pStart); g.end = Math.max(g.end, pEnd); g.pieces.push(piece); }
   }
   return groups;
@@ -164,16 +169,16 @@ export function wireDrag() {
     const src = el.dataset.src;
     const group = groups.get(src);
     const s = source(src);
-    if (!s || (s.kind !== 'rule' && s.kind !== 'meal') || group.pieces.length !== 1 || group.rigid) continue;
+    if (!s || (s.kind !== 'rule' && s.kind !== 'meal') || group.pieces.length !== 1 || group.rigid || group.carved) continue;
 
     el.addEventListener('pointerdown', downEv => {
       if (downEv.target.closest('[data-edit]') || downEv.target.closest('[data-done]') || downEv.button !== 0) return;
       const day = buildDay(state.cursor), win = day.win, ppm = PPM();
       const draggedOriginalStart = group.start, draggedDuration = group.end - group.start, draggedPri = group.pri;
-      // a carved/split block (e.g. a work shift with a meal cut out of the middle) has no single
-      // "length" a push can preserve — its bounding box would swallow whatever sits in its own gap.
-      // Leave those in place; the engine's normal conflict resolution sorts out any overlap on drop.
-      const others = [...groups.values()].filter(g => g.src !== src && g.pieces.length === 1).sort((a, b) => a.start - b.start);
+      // every other block on the day is a candidate obstacle — multi-piece (split/carved) and
+      // carved-in blocks are never actually pushed (isWall always claims them), but they still
+      // need to show up here so the drag treats them as real obstacles instead of walking through them
+      const others = [...groups.values()].filter(g => g.src !== src).sort((a, b) => a.start - b.start);
       const before = others.filter(g => g.start < draggedOriginalStart);
       const after = others.filter(g => g.start >= draggedOriginalStart);
       const { minStart, maxStart } = computeBounds(before, after, draggedPri, win, draggedDuration);

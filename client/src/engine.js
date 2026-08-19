@@ -193,7 +193,9 @@ function layout(cands, win) {
       placed.splice(i, 1,
         Object.assign({}, p, { end: s, padA: 0, part: 'x' }),
         Object.assign({}, p, { start: s + len, padB: 0, part: 'x' }));
-      take(c, { start: s, end: s + len, moved: s !== c.start });
+      // carved-in blocks don't own a timeframe of their own — they live wherever the
+      // rigid block around them has room, so dragging can't treat them like a normal event
+      take(c, { start: s, end: s + len, moved: s !== c.start, carved: true });
       return true;
     }
     return false;

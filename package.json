@@ -2,9 +2,12 @@
   "name": "gaja-main",
   "private": true,
   "workspaces": [
-    "client"
+    "client",
+    "server"
   ],
   "scripts": {
-    "dev": "npm run dev -w client"
+    "dev": "npm run dev -w client",
+    "dev:server": "npm run dev -w server",
+    "migrate": "npm run migrate -w server"
   }
 }

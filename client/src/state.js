@@ -1,5 +1,5 @@
 import { TODAY } from './utils.js';
-import { store, KEY } from './store.js';
+import { store, KEY } from './api/store.js';
 
 /* ---------- state ----------
    rules   : recurring or one-off blocks the engine lays down

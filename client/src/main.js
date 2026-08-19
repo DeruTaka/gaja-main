@@ -1,14 +1,16 @@
 import { state, blank } from './state.js';
-import { store, KEY } from './store.js';
+import { store, KEY } from './api/store.js';
+import { ensureAuthed } from './auth/screen.js';
 import { bump } from './engine.js';
 import { mount } from './views/paint.js';
 import { renderOnboard } from './onboarding/onboard.js';
 import { newDraft } from './onboarding/steps.js';
 
 /* ---------- boot ----------
-   Phase 0: same boot sequence gaja.html shipped with, just split into modules —
-   the auth gate (Phase 1) slots in front of this once the backend exists. */
+   ensureAuthed() is a no-op unless VITE_API_URL is configured — local dev
+   skips straight to loading the (local) plan, same as before. */
 (async function boot() {
+  await ensureAuthed();
   const saved = await store.get(KEY);
   if (saved && saved.profile) { state.S = saved; bump(); mount(); }
   else { state.S = blank(); state.D = newDraft(); renderOnboard(); }
