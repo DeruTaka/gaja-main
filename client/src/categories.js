@@ -5,7 +5,7 @@ export const CAT = {
   assessment: { label: 'Assessments',   icon: '📚', v: '--assessment', pri: 1, rigid: false, split: true },
   tournament: { label: 'Tournaments',   icon: '🏆', v: '--tournament', pri: 2, rigid: true,  split: false },
   health:     { label: 'Health',        icon: '💪', v: '--health',     pri: 3, rigid: false, split: false },
-  meal:       { label: 'Meals',         icon: '🍽️', v: '--meal',       pri: 2, rigid: false, split: false },
+  meal:       { label: 'Meals',         icon: '🍽️', v: '--meal',       pri: 1, rigid: false, split: false },
   habit:      { label: 'Daily habits',  icon: '☕', v: '--habit',      pri: 3, rigid: false, split: false },
   hobby:      { label: 'Hobbies',       icon: '🎨', v: '--hobby',      pri: 4, rigid: false, split: true },
   special:    { label: 'Reminders',     icon: '🔔', v: '--special',    pri: 2, rigid: false, split: false },
@@ -20,6 +20,11 @@ export const MON = ['January', 'February', 'March', 'April', 'May', 'June', 'Jul
 /* categories a user can actually create entries for — travel/sleep are structural
    (auto-generated padding, and the wake/sleep window itself), not filterable */
 export const RAIL_CATS = ['work', 'class', 'assessment', 'tournament', 'meal', 'health', 'habit', 'hobby', 'special'];
+
+/* the fixed-life-scaffolding categories set up during onboarding — always priority 1,
+   and the priority control is hidden from their forms so nothing can knock them down */
+export const PRI_LOCKED = new Set(['work', 'class', 'assessment', 'meal']);
+export const priLocked = cat => PRI_LOCKED.has(cat);
 
 /* hiding is a pure display filter — it never touches buildDay()'s placement.
    Travel blocks carry cat:'travel' regardless of what they're padding, so a hidden

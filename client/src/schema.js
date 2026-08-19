@@ -5,6 +5,8 @@ import { travelFields, modeField, daysLabel } from './ui/forms.js';
 /* ============================================================
    ENTRY SCHEMAS  (one shape per category)
    ============================================================ */
+const LOCKED_PRI = `<div class="hint">Priority 1 · locked — set up during onboarding, this always gets its slot first.</div>`;
+
 export const SCHEMA = {
   work: {
     cat: 'work', add: 'Add a job', blank: () => ({ title: 'Work', days: [1, 2, 3, 4, 5], start: '09:00', end: '17:00', mode: 'In person', miles: '', vmin: '', mealBreak: true, pri: 1 }),
@@ -13,7 +15,7 @@ export const SCHEMA = {
       + ROW(F(e, { k: 'start', t: 'time', label: 'Starts' }), F(e, { k: 'end', t: 'time', label: 'Ends' }))
       + modeField(e) + travelFields(e)
       + F(e, { k: 'mealBreak', t: 'check', label: 'There is a meal break inside these hours', hint: 'Lets Gaja put lunch inside the workday instead of around it.' })
-      + F(e, { k: 'pri', t: 'pri', label: 'Priority' }),
+      + LOCKED_PRI,
   },
 
   class: {
@@ -21,7 +23,7 @@ export const SCHEMA = {
     sum: e => `${daysLabel(e.days)} · ${clock(t2m(e.start))}–${clock(t2m(e.end))}`,
     form: e => F(e, { k: 'title', t: 'text', label: 'Class', ph: 'Organic Chemistry II' }) + F(e, { k: 'days', t: 'days', label: 'Days' })
       + ROW(F(e, { k: 'start', t: 'time', label: 'Starts' }), F(e, { k: 'end', t: 'time', label: 'Ends' }))
-      + modeField(e) + travelFields(e) + F(e, { k: 'pri', t: 'pri', label: 'Priority' }),
+      + modeField(e) + travelFields(e) + LOCKED_PRI,
   },
 
   health: {
@@ -73,7 +75,7 @@ export const SCHEMA = {
             F(e, { k: 'maxDaily', t: 'num', label: 'Max study hours per day', min: 0.5, max: 12, step: '0.5' }))
       + F(e, { k: 'pref', t: 'time', label: 'Preferred study time', hint: 'Gaja spreads the hours to the exam date and catches up whatever you miss.' })
       + modeField(e) + (e.mode === 'In person' ? F(e, { k: 'place', t: 'text', label: 'Test centre', ph: 'Where you sit the exam' }) : '')
-      + F(e, { k: 'pri', t: 'pri', label: 'Priority' }),
+      + LOCKED_PRI,
   },
 
   tournament: {

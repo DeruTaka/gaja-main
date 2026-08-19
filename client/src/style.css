@@ -153,7 +153,9 @@ input[type=time],input[type=date]{color-scheme:dark}
 .ev.dragging:hover{transform:none}
 .ev .etitle{font-weight:600;font-size:13.5px;line-height:1.25;letter-spacing:-.005em}
 .ev .etime{font-family:var(--mono);font-size:11px;color:var(--graphite);margin-top:2px}
-.ev .eico{font-size:14px;line-height:1.2;flex:none}
+.ev .eico{font-size:14px;line-height:1.2;flex:none;background:none;border:none;padding:0;margin:0;
+  font-family:inherit;color:inherit;cursor:pointer;border-radius:4px}
+.ev .eico:hover{background:rgba(255,255,255,.08)}
 .ev .ebody{flex:1;min-width:0}
 .ev .etitle,.ev .etime{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ev.short{padding:4px 11px;align-items:center}

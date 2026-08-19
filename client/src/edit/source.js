@@ -2,6 +2,7 @@ import { state } from '../state.js';
 import { t2m, m2t } from '../utils.js';
 import { buildDay, getMark, markKey } from '../engine.js';
 import { entryTravel } from '../travel.js';
+import { priLocked } from '../categories.js';
 import { F, ROW } from '../ui/fields.js';
 import { modeField, travelFields } from '../ui/forms.js';
 import { SCHEMA } from '../schema.js';
@@ -65,7 +66,8 @@ export function editSeries(src, date) {
             <button class="btn primary" data-save>Save</button>`,
     });
     layer().querySelector('[data-save]').onclick = () => {
-      Object.assign(s.o, tmp, { hours: Number(tmp.hours) || 1, maxDaily: Number(tmp.maxDaily) || 1, pri: Number(tmp.pri) || 1 });
+      const pri = priLocked(key) ? 1 : (Number(tmp.pri) || 1);
+      Object.assign(s.o, tmp, { hours: Number(tmp.hours) || 1, maxDaily: Number(tmp.maxDaily) || 1, pri });
       closeModal(); commit(); toast('Series updated.');
     };
     layer().querySelector('[data-del2]').onclick = () => {
@@ -78,7 +80,8 @@ export function editSeries(src, date) {
     modal({
       title: `Edit ${m.name}`,
       body: ROW(F(tmp, { k: 'name', t: 'text', label: 'Name' }), F(tmp, { k: 'time', t: 'time', label: 'Time' }), F(tmp, { k: 'len', t: 'num', label: 'Minutes', min: 5, max: 180 }))
-        + `<div class="hint">Leave the time empty to let Gaja place it in the day's gaps.</div>`,
+        + `<div class="hint">Leave the time empty to let Gaja place it in the day's gaps.</div>`
+        + `<div class="hint">Priority 1 · locked — set up during onboarding, this always gets its slot first.</div>`,
       foot: `<div class="spacer"></div><button class="btn primary" data-save>Save</button>`,
     });
     layer().querySelector('[data-save]').onclick = () => {
@@ -88,13 +91,14 @@ export function editSeries(src, date) {
   }
   const r = s.o, tmp = Object.assign({}, r, { len: t2m(r.end) - t2m(r.start) });
   const isTimed = r.cat !== 'habit';
+  const locked = priLocked(r.cat);
   modal({
     title: `Edit ${r.title}`,
     body: F(tmp, { k: 'title', t: 'text', label: 'Title' })
       + (r.repeat === 'weekly' ? F(tmp, { k: 'days', t: 'days', label: 'Days' }) : `<div class="hint">Repeats ${r.repeat}.</div>`)
       + ROW(F(tmp, { k: 'start', t: 'time', label: 'Starts' }), isTimed ? F(tmp, { k: 'end', t: 'time', label: 'Ends' }) : F(tmp, { k: 'len', t: 'num', label: 'Minutes', min: 5 }))
       + (r.mode ? modeField(tmp) + travelFields(tmp) : '')
-      + F(tmp, { k: 'pri', t: 'pri', label: 'Priority' }),
+      + (locked ? `<div class="hint">Priority 1 · locked — set up during onboarding, this always gets its slot first.</div>` : F(tmp, { k: 'pri', t: 'pri', label: 'Priority' })),
     foot: `<button class="btn danger" data-del2>Delete series</button><div class="spacer"></div>
           <button class="btn primary" data-save>Save</button>`,
   });
@@ -103,7 +107,7 @@ export function editSeries(src, date) {
     if (t2m(end) === t2m(tmp.start)) return toast('Give it some length.');
     const trav = r.mode ? entryTravel(tmp, t2m(tmp.start)) : 0;
     Object.assign(r, {
-      title: tmp.title, days: tmp.days, start: tmp.start, end, pri: Number(tmp.pri) || r.pri,
+      title: tmp.title, days: tmp.days, start: tmp.start, end, pri: locked ? 1 : (Number(tmp.pri) || r.pri),
       mode: tmp.mode, miles: tmp.miles, vmin: tmp.vmin, place: tmp.place,
       travelBefore: trav, travelAfter: trav,
     });

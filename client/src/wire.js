@@ -47,8 +47,7 @@ export function wire() {
   document.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { state.cursor = b.dataset.month; state.view = 'month'; paint(); });
 
   document.querySelectorAll('.ev').forEach(el => {
-    const toggle = () => {
-      if (el.dataset.justDragged) { delete el.dataset.justDragged; return; } // the trailing click after a real drag isn't a toggle
+    const toggleDone = () => {
       const src = el.dataset.src, mk = getMark(state.cursor, src) || {};
       const on = !mk.done;
       state.S.marks[markKey(state.cursor, src)] = Object.assign(mk, {
@@ -56,12 +55,18 @@ export function wire() {
         mins: t2m(el.dataset.end) - t2m(el.dataset.start),
       });
       el.classList.toggle('done', on);
-      el.setAttribute('aria-pressed', String(on));
+      const chk = el.querySelector('[data-done]');
+      if (chk) { chk.setAttribute('aria-pressed', String(on)); chk.textContent = on ? '✓' : chk.dataset.icon; }
       if (on) { el.classList.add('swipe'); setTimeout(() => el.classList.remove('swipe'), 520); }
       bump(); save();
     };
-    el.onclick = ev => { if (ev.target.closest('[data-edit]')) return; toggle(); };
-    el.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggle(); } };
+    el.onclick = ev => {
+      if (el.dataset.justDragged) { delete el.dataset.justDragged; return; } // the trailing click after a real drag isn't an open
+      if (ev.target.closest('[data-edit]')) return;
+      if (ev.target.closest('[data-done]')) { toggleDone(); return; }
+      openEdit(el.dataset.src, state.cursor);
+    };
+    el.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openEdit(el.dataset.src, state.cursor); } };
   });
   document.querySelectorAll('[data-edit]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); openEdit(b.dataset.edit, state.cursor);

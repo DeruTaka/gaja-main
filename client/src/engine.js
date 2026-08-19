@@ -137,7 +137,7 @@ function candidates(dstr, win) {
       let e = s + (Number(m.len) || 30);
       if (mk && mk.start) { s = t2m(mk.start); e = t2m(mk.end); }
       push({
-        src: 'meal' + i, cat: 'meal', title: m.name, pri: 2, start: s, end: e, minMin: 20, drift: 240,
+        src: 'meal' + i, cat: 'meal', title: m.name, pri: 1, start: s, end: e, minMin: 20, drift: 240,
         order: m.time ? 2 : 3.5, // an unspecified meal fills gaps, it does not claim them
         canCarve: !!P.mealAtWork,
       });

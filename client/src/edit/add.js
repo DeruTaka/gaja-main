@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { iso, addDays, esc } from '../utils.js';
-import { CAT, catColor } from '../categories.js';
+import { CAT, catColor, priLocked } from '../categories.js';
 import { SCHEMA } from '../schema.js';
 import { buildDay, bump } from '../engine.js';
 import { save } from '../state.js';
@@ -40,6 +40,7 @@ function addForm(key, preset, problems) {
 }
 /* the feasibility gate: add it, look at the next ~45 live days, roll back if it never fits */
 export function tryAdd(key, e) {
+  if (priLocked(SCHEMA[key].cat)) e.pri = 1;
   const built = draftToItems(Object.assign(newDraft(), { [key]: [e] }));
   const ids = [...built.rules, ...built.goals].map(x => x.id);
   state.S.rules.push(...built.rules); state.S.goals.push(...built.goals); bump();

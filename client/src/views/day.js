@@ -23,9 +23,9 @@ export function dayView(d) {
     const done = mk && mk.done;
     const short = hgt < 46;
     return `<div class="ev ${done ? 'done' : ''} ${short ? 'short' : ''}" style="--c:${catColor(e.cat)};top:${top}px;height:${hgt}px"
-      data-src="${e.src}" data-start="${m2t(e.start)}" data-end="${m2t(e.end)}" data-cat="${e.cat}"
-      data-title="${esc(e.title)}" tabindex="0" role="button" aria-pressed="${!!done}">
-      <span class="eico">${CAT[e.cat].icon}</span>
+      data-src="${e.src}" data-start="${m2t(e.start)}" data-end="${m2t(e.end)}" data-cat="${e.cat}" data-pri="${e.pri}"
+      data-title="${esc(e.title)}" tabindex="0" role="button" aria-label="Edit ${esc(e.title)}">
+      <button class="eico" data-done="${e.src}" data-icon="${CAT[e.cat].icon}" aria-pressed="${!!done}" aria-label="${done ? 'Mark not done' : 'Mark done'}">${done ? '✓' : CAT[e.cat].icon}</button>
       <div class="ebody">
         <div class="etitle">${esc(e.title)}${e.part ? ` <span class="mono" style="color:var(--graphite-dim);font-size:11px">${e.part}</span>` : ''}</div>
         <div class="etime">${clock(e.start)}–${clock(e.end)}${e.moved ? ' · moved' : ''}${
