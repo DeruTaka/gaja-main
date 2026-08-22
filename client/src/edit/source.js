@@ -61,7 +61,7 @@ export function editSeries(src, date) {
     const key = s.o.kind === 'assessment' ? 'assessment' : 'tournament';
     const tmp = Object.assign({}, s.o);
     modal({
-      title: `Edit ${s.o.title || 'goal'}`, body: SCHEMA[key].form(tmp),
+      title: `Edit ${s.o.title || 'goal'}`, body: () => SCHEMA[key].form(tmp),
       foot: `<button class="btn danger" data-del2>Delete</button><div class="spacer"></div>
             <button class="btn primary" data-save>Save</button>`,
     });
@@ -79,7 +79,7 @@ export function editSeries(src, date) {
     const m = s.o, tmp = Object.assign({}, m);
     modal({
       title: `Edit ${m.name}`,
-      body: ROW(F(tmp, { k: 'name', t: 'text', label: 'Name' }), F(tmp, { k: 'time', t: 'time', label: 'Time' }), F(tmp, { k: 'len', t: 'num', label: 'Minutes', min: 5, max: 180 }))
+      body: () => ROW(F(tmp, { k: 'name', t: 'text', label: 'Name' }), F(tmp, { k: 'time', t: 'time', label: 'Time' }), F(tmp, { k: 'len', t: 'num', label: 'Minutes', min: 5, max: 180 }))
         + `<div class="hint">Leave the time empty to let Gaja place it in the day's gaps.</div>`
         + `<div class="hint">Priority 1 · locked — set up during onboarding, this always gets its slot first.</div>`,
       foot: `<div class="spacer"></div><button class="btn primary" data-save>Save</button>`,
@@ -94,7 +94,7 @@ export function editSeries(src, date) {
   const locked = priLocked(r.cat);
   modal({
     title: `Edit ${r.title}`,
-    body: F(tmp, { k: 'title', t: 'text', label: 'Title' })
+    body: () => F(tmp, { k: 'title', t: 'text', label: 'Title' })
       + (r.repeat === 'weekly' ? F(tmp, { k: 'days', t: 'days', label: 'Days' }) : `<div class="hint">Repeats ${r.repeat}.</div>`)
       + ROW(F(tmp, { k: 'start', t: 'time', label: 'Starts' }), isTimed ? F(tmp, { k: 'end', t: 'time', label: 'Ends' }) : F(tmp, { k: 'len', t: 'num', label: 'Minutes', min: 5 }))
       + (r.mode ? modeField(tmp) + travelFields(tmp) : '')

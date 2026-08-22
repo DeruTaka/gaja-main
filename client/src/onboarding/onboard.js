@@ -2,6 +2,7 @@ import { state } from '../state.js';
 import { STEPS, finish } from './steps.js';
 import { SCHEMA } from '../schema.js';
 import { rerenderHook } from '../ui/rerender.js';
+import { refreshModalBody } from '../ui/modal.js';
 import { mount } from '../views/paint.js';
 
 export function renderOnboard() {
@@ -35,8 +36,9 @@ export function renderOnboard() {
 
 rerenderHook.fn = () => {
   const b = document.getElementById('stepBody');
-  if (b) b.innerHTML = STEPS[state.step].render();
-  else if (window.paint) window.paint();
+  if (b) { b.innerHTML = STEPS[state.step].render(); return; }
+  if (refreshModalBody()) return; // a days/choice/priority field inside an open modal
+  if (window.paint) window.paint();
 };
 
 /* add / remove / expand entries */

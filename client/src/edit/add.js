@@ -30,7 +30,7 @@ function openNewCategory(preset) {
   const draft = { label: '', icon: '🏷️', color: '#7C9CF5', pri: 4 };
   modal({
     title: 'New category',
-    body: F(draft, { k: 'label', t: 'text', label: 'Name', ph: 'Volunteering, side project...' })
+    body: () => F(draft, { k: 'label', t: 'text', label: 'Name', ph: 'Volunteering, side project...' })
       + ROW(F(draft, { k: 'icon', t: 'text', label: 'Icon', ph: '🎗️' }), F(draft, { k: 'color', t: 'color', label: 'Color' }))
       + F(draft, { k: 'pri', t: 'pri', label: 'Priority' }),
     foot: `<div class="spacer"></div><button class="btn" data-back>Back</button><button class="btn primary" data-save>Create</button>`,
@@ -51,7 +51,7 @@ function addForm(key, preset, problems) {
   addForm.draft = e; addForm.key = key;
   modal({
     title: sc.add,
-    body: (problems ? `<div class="err"><b>Cannot fit this in</b>${problems.map(p =>
+    body: () => (problems ? `<div class="err"><b>Cannot fit this in</b>${problems.map(p =>
       `${p.date}: ${esc(p.why)}`).join('<br>')}<br><br>Lower another item's priority, shorten this one, or pick a different time.</div>` : '')
       + sc.form(e),
     foot: `<div class="spacer"></div><button class="btn" data-back>Back</button><button class="btn primary" data-save>Check and add</button>`,

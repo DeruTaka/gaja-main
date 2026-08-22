@@ -14,7 +14,7 @@ export function monthView(d) {
     const cd = addDays(start, i), ds = iso(cd), out = cd.getMonth() !== d.getMonth();
     const day = out ? null : buildDay(ds);
     const evs = day ? day.events.filter(e => e.cat !== 'travel' && !hidden.includes(e.cat)) : [];
-    cells += `<button class="mcell ${out ? 'out' : ''} ${ds === TODAY ? 'today' : ''} ${ds === state.cursor ? 'sel' : ''}" data-day="${ds}">
+    cells += `<button class="mcell ${out ? 'out' : ''} ${ds === TODAY ? 'today' : ''} ${ds === state.cursor ? 'sel' : ''}" data-goto-day="${ds}">
       <span class="dn">${cd.getDate()}</span>
       ${evs.slice(0, 3).map(e => `<span class="mchip" style="--c:${catColor(e.cat)}"><i></i>${esc(e.title)}</span>`).join('')}
       ${evs.length > 3 ? `<div class="mmore">+${evs.length - 3} more</div>` : ''}

@@ -161,7 +161,8 @@ function finalizeDrag(draggedSrc, date, dStart, dEnd, pushed) {
 }
 
 export function wireDrag() {
-  const evEls = [...document.querySelectorAll('.ev')].filter(el => el.dataset.cat !== 'travel');
+  const root = document.getElementById('root'); // never bare `document` — see wire.js's note on #layer collisions
+  const evEls = [...root.querySelectorAll('.ev')].filter(el => el.dataset.cat !== 'travel');
   if (!evEls.length) return;
   const groups = collectGroups(evEls);
 

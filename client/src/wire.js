@@ -10,10 +10,20 @@ import { wireDrag } from './edit/drag.js';
 import { openNotifications } from './ui/notifications.js';
 import { paint } from './views/paint.js';
 
-/* ---------- wiring ---------- */
+/* ---------- wiring ----------
+   Everything here belongs to the app shell (#root) — never query bare
+   `document`. A modal (#layer) wires its own handlers directly wherever it's
+   opened (edit/add.js, edit/source.js, ...), and #root gets fully re-rendered
+   on every paint() while a modal can still be open over it — a global
+   querySelectorAll would also match same-named attributes rendered inside that
+   modal's form fields (e.g. the day-of-week picker's data-day="0".."6" in
+   ui/fields.js collided with month view's data-day="<iso-date>" here, so a
+   click on "Tue" while a form was open silently set state.cursor to "2" and
+   every date computation in the app went NaN from then on). */
 export function wire() {
-  document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { state.view = b.dataset.view; paint(); });
-  document.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => {
+  const root = document.getElementById('root');
+  root.querySelectorAll('[data-view]').forEach(b => b.onclick = () => { state.view = b.dataset.view; paint(); });
+  root.querySelectorAll('[data-nav]').forEach(b => b.onclick = () => {
     const v = b.dataset.nav;
     if (v === 'today') state.cursor = TODAY;
     else {
@@ -28,10 +38,10 @@ export function wire() {
     // it was, making the click look like it did nothing. Day view already scrolls
     // to "now" on every paint, so it doesn't need this.
     if (v === 'today' && state.view !== 'day') {
-      requestAnimationFrame(() => document.querySelector('.mcell.today, .yc.today')?.scrollIntoView({ block: 'center', behavior: 'instant' }));
+      requestAnimationFrame(() => root.querySelector('.mcell.today, .yc.today')?.scrollIntoView({ block: 'center', behavior: 'instant' }));
     }
   });
-  document.querySelectorAll('[data-cat-toggle]').forEach(b => b.onclick = () => {
+  root.querySelectorAll('[data-cat-toggle]').forEach(b => b.onclick = () => {
     const c = b.dataset.catToggle;
     const P = state.S.profile;
     P.hiddenCats = P.hiddenCats || [];
@@ -41,14 +51,14 @@ export function wire() {
   });
 
   const add = () => openAdd();
-  const ab = document.getElementById('addBtn'); if (ab) ab.onclick = add;
-  const fb = document.getElementById('fab'); if (fb) fb.onclick = add;
-  const sb = document.getElementById('setBtn'); if (sb) sb.onclick = openSettings;
-  const nb = document.getElementById('notifBtn'); if (nb) nb.onclick = openNotifications;
-  document.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { state.cursor = b.dataset.day; state.view = 'day'; paint(); });
-  document.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { state.cursor = b.dataset.month; state.view = 'month'; paint(); });
+  const ab = root.querySelector('#addBtn'); if (ab) ab.onclick = add;
+  const fb = root.querySelector('#fab'); if (fb) fb.onclick = add;
+  const sb = root.querySelector('#setBtn'); if (sb) sb.onclick = openSettings;
+  const nb = root.querySelector('#notifBtn'); if (nb) nb.onclick = openNotifications;
+  root.querySelectorAll('[data-goto-day]').forEach(b => b.onclick = () => { state.cursor = b.dataset.gotoDay; state.view = 'day'; paint(); });
+  root.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { state.cursor = b.dataset.month; state.view = 'month'; paint(); });
 
-  document.querySelectorAll('.ev').forEach(el => {
+  root.querySelectorAll('.ev').forEach(el => {
     const toggleDone = () => {
       const src = el.dataset.src, mk = getMark(state.cursor, src) || {};
       const on = !mk.done;
@@ -70,11 +80,11 @@ export function wire() {
     };
     el.onkeydown = ev => { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); openEdit(el.dataset.src, state.cursor); } };
   });
-  document.querySelectorAll('[data-edit]').forEach(b => b.onclick = ev => {
+  root.querySelectorAll('[data-edit]').forEach(b => b.onclick = ev => {
     ev.stopPropagation(); openEdit(b.dataset.edit, state.cursor);
   });
 
-  document.querySelectorAll('[data-sugg]').forEach(b => b.onclick = () => {
+  root.querySelectorAll('[data-sugg]').forEach(b => b.onclick = () => {
     const [what, a, c] = b.dataset.sugg.split(':');
     if (what === 'dismiss') { state.S.dismissed[state.cursor + '|' + a] = 1; save(); paint(); return; }
     if (what === 'study') {
