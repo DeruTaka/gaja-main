@@ -1,6 +1,7 @@
 import { state } from './state.js';
 import { parseISO, iso, addDays, t2m, m2t, TODAY } from './utils.js';
-import { getMark, markKey, bump, studyMap } from './engine.js';
+import { getMark, markKey, bump, studyMap, taskCompletion } from './engine.js';
+import { isTask } from './categories.js';
 import { save } from './state.js';
 import { commit, toast } from './ui/modal.js';
 import { openAdd } from './edit/add.js';
@@ -71,6 +72,16 @@ export function wire() {
       if (chk) { chk.setAttribute('aria-pressed', String(on)); chk.textContent = on ? '✓' : chk.dataset.icon; }
       if (on) { el.classList.add('swipe'); setTimeout(() => el.classList.remove('swipe'), 520); }
       bump(); save();
+      // the completion card is part of the same paint() output as this block, but a
+      // full repaint here would cut the swipe animation short — patch it in place
+      // instead, same numbers taskCompletion() would give a fresh render (engine.js)
+      if (isTask(el.dataset.cat)) {
+        const tc = taskCompletion(state.cursor);
+        const countEl = root.querySelector('#taskCount'), barEl = root.querySelector('#taskBar'), hintEl = root.querySelector('#taskHint');
+        if (countEl) countEl.textContent = `${tc.done}/${tc.total}`;
+        if (barEl) barEl.style.width = `${tc.pct}%`;
+        if (hintEl) hintEl.textContent = `${tc.pct}% done${tc.pct === 100 ? ' — nice.' : ''}`;
+      }
     };
     el.onclick = ev => {
       if (el.dataset.justDragged) { delete el.dataset.justDragged; return; } // the trailing click after a real drag isn't an open

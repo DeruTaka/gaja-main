@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { getCat } from './categories.js';
+import { getCat, isTask } from './categories.js';
 import { t2m, clock, dur, iso, parseISO, addDays, daysBetween, clamp, TODAY } from './utils.js';
 
 /* ============================================================
@@ -360,4 +360,15 @@ export function buildDay(dstr) {
   };
   dayCache.set(dstr, { v: VERSION, day });
   return day;
+}
+
+/* work/class/meals aren't "tasks" (categories.js:isTask) — this is the shared
+   source of truth for both the day view's completion card and the done-toggle
+   in wire.js, which updates that card in place without a full repaint (see the
+   note there), so both need to compute the exact same number. */
+export function taskCompletion(dstr) {
+  const day = buildDay(dstr);
+  const srcs = [...new Set(day.events.filter(e => isTask(e.cat)).map(e => e.src))];
+  const done = srcs.filter(src => { const mk = getMark(dstr, src); return mk && mk.done; }).length;
+  return { done, total: srcs.length, pct: srcs.length ? Math.round(done / srcs.length * 100) : null };
 }

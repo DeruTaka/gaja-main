@@ -1,7 +1,7 @@
 import { state } from '../state.js';
-import { getCat, catColor, DOW, MON, filterHidden } from '../categories.js';
+import { getCat, catColor, DOW, MON, filterHidden, isTask } from '../categories.js';
 import { clock, dur, t2m, m2t, esc, TODAY, daysBetween } from '../utils.js';
-import { buildDay, getMark, studyMap, studyProgress } from '../engine.js';
+import { buildDay, getMark, studyMap, studyProgress, taskCompletion } from '../engine.js';
 import { navbar, PPM } from './paint.js';
 
 /* ---------------- DAY ---------------- */
@@ -22,10 +22,14 @@ export function dayView(d) {
     const mk = getMark(state.cursor, e.src);
     const done = mk && mk.done;
     const short = hgt < 46;
+    const task = isTask(e.cat);
+    const icon = task
+      ? `<button class="eico" data-done="${e.src}" data-icon="${getCat(e.cat).icon}" aria-pressed="${!!done}" aria-label="${done ? 'Mark not done' : 'Mark done'}">${done ? '✓' : getCat(e.cat).icon}</button>`
+      : `<span class="eico static">${getCat(e.cat).icon}</span>`; // work/class/meals aren't "completed" — nothing to check off
     return `<div class="ev ${done ? 'done' : ''} ${short ? 'short' : ''}" style="--c:${catColor(e.cat)};top:${top}px;height:${hgt}px"
       data-src="${e.src}" data-start="${m2t(e.start)}" data-end="${m2t(e.end)}" data-cat="${e.cat}" data-pri="${e.pri}" data-carved="${e.carved ? '1' : ''}"
       data-title="${esc(e.title)}" tabindex="0" role="button" aria-label="Edit ${esc(e.title)}">
-      <button class="eico" data-done="${e.src}" data-icon="${getCat(e.cat).icon}" aria-pressed="${!!done}" aria-label="${done ? 'Mark not done' : 'Mark done'}">${done ? '✓' : getCat(e.cat).icon}</button>
+      ${icon}
       <div class="ebody">
         <div class="etitle">${esc(e.title)}${e.part ? ` <span class="mono" style="color:var(--graphite-dim);font-size:11px">${e.part}</span>` : ''}</div>
         <div class="etime">${clock(e.start)}–${clock(e.end)}${e.moved ? ' · moved' : ''}${
@@ -78,6 +82,16 @@ export function sidePanel(day, visible = day.events) {
     </div>` : '';
   const conf = banner + notes;
 
+  // completion tracking — counts against the real schedule (day.events), not the
+  // display-only hidden-category filter, so hiding a category from view can't make
+  // completion look better. wire.js's done-toggle updates #tasksCard in place
+  // (see the note there) rather than a full repaint, so this markup's ids matter.
+  const tc = taskCompletion(state.cursor);
+  const tasksCard = tc.total ? `<div class="card" id="tasksCard"><h3>Today's tasks <em id="taskCount">${tc.done}/${tc.total}</em></h3>
+      <div class="bar" style="--c:var(--lime)"><i id="taskBar" style="width:${tc.pct}%"></i></div>
+      <div class="hint" id="taskHint">${tc.pct}% done${tc.pct === 100 ? ' — nice.' : ''}</div>
+    </div>` : '';
+
   const sugg = day.gaps.filter(g => !state.S.dismissed[state.cursor + '|' + g.s]).map(g => {
     const goal = state.S.goals.find(x => x.kind === 'assessment' && state.cursor < x.deadline && studyProgress(x).pct < 1);
     return `<div class="note"><b>${dur(g.e - g.s)} open · ${clock(g.s)}–${clock(g.e)}</b>
@@ -98,6 +112,7 @@ export function sidePanel(day, visible = day.events) {
   }).join('');
 
   return conf
+    + tasksCard
     + (sugg ? `<div class="card"><h3>Open ground</h3>${sugg}</div>` : '')
     + (goals ? `<div class="card"><h3>Countdown</h3>${goals}</div>` : '')
     + `<div class="card"><h3>Where the day goes</h3>${load || '<div class="hint">Nothing scheduled.</div>'}</div>`;

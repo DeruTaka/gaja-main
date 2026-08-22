@@ -55,6 +55,12 @@ export const railCats = () => [...RAIL_CATS_FIXED, ...(state.S?.customCats || []
 export const PRI_LOCKED = new Set(['work', 'class', 'assessment', 'meal']);
 export const priLocked = cat => PRI_LOCKED.has(cat);
 
+/* work/class/meals aren't "tasks" you complete — they're fixed blocks that either
+   happen at their time or don't, nothing to check off. Everything else (including
+   a user-defined category) counts toward completion tracking and catch-up prompts. */
+const NOT_A_TASK = new Set(['work', 'class', 'meal', 'travel']);
+export const isTask = cat => !NOT_A_TASK.has(cat);
+
 /* hiding is a pure display filter — it never touches buildDay()'s placement.
    Travel blocks carry cat:'travel' regardless of what they're padding, so a hidden
    category's travel also has to be dropped by cross-referencing its parent's src. */
