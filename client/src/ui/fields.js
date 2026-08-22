@@ -22,6 +22,12 @@ export function F(o, d) { // d: {k,t,label,hint,ph,opts,min,max,step}
     case 'color':
       inner = `<input id="i${id}${d.k}" type="color" ${base} value="${esc(v || '#7C9CF5')}" style="height:40px;padding:4px;cursor:pointer">`;
       break;
+    case 'select': // a real dropdown — d.opts is [{value,label}] or a flat array of strings
+      inner = `<select id="i${id}${d.k}" ${base}>${d.opts.map(op => {
+        const val = typeof op === 'object' ? op.value : op, label = typeof op === 'object' ? op.label : op;
+        return `<option value="${esc(val)}" ${v === val ? 'selected' : ''}>${esc(label)}</option>`;
+      }).join('')}</select>`;
+      break;
     case 'days':
       inner = `<div class="days" ${base} data-t="days">${DOW1.map((n, i) =>
         `<button type="button" data-day="${i}" aria-pressed="${(v || []).includes(i)}" title="${DOW[i]}">${n}</button>`).join('')}</div>`;

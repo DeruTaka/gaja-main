@@ -45,6 +45,23 @@ export function catColor(key) {
   return custom ? custom.color : 'var(--habit)';
 }
 
+/* curated options for the "New category" icon dropdown — a free-text emoji field
+   isn't discoverable on desktop (no visible picker on most keyboards), so this
+   gives PC users a real dropdown of choices instead of asking them to know a
+   system emoji shortcut */
+export const ICON_CHOICES = [
+  { value: '🏷️', label: '🏷️ Tag' }, { value: '🎯', label: '🎯 Goal' }, { value: '🧩', label: '🧩 Project' },
+  { value: '🎗️', label: '🎗️ Cause' }, { value: '🌍', label: '🌍 Volunteering' }, { value: '👥', label: '👥 Social' },
+  { value: '🎨', label: '🎨 Art' }, { value: '🎵', label: '🎵 Music' }, { value: '🎤', label: '🎤 Performance' },
+  { value: '📷', label: '📷 Photography' }, { value: '🎬', label: '🎬 Film & TV' }, { value: '🎮', label: '🎮 Gaming' },
+  { value: '📖', label: '📖 Reading' }, { value: '✍️', label: '✍️ Writing' }, { value: '🧵', label: '🧵 Crafts' },
+  { value: '🌱', label: '🌱 Garden' }, { value: '🐾', label: '🐾 Pets' }, { value: '🍳', label: '🍳 Cooking' },
+  { value: '🧘', label: '🧘 Mindfulness' }, { value: '🧠', label: '🧠 Mental health' }, { value: '🏋️', label: '🏋️ Training' },
+  { value: '🚗', label: '🚗 Errands' }, { value: '✈️', label: '✈️ Travel' }, { value: '🏠', label: '🏠 Home' },
+  { value: '🛠️', label: '🛠️ Repair' }, { value: '💰', label: '💰 Finance' }, { value: '📝', label: '📝 Admin' },
+  { value: '🎉', label: '🎉 Events' }, { value: '🌟', label: '🌟 Special' },
+];
+
 /* categories a user can actually create entries for — travel/sleep are structural
    (auto-generated padding, and the wake/sleep window itself), not filterable */
 const RAIL_CATS_FIXED = ['work', 'class', 'assessment', 'tournament', 'meal', 'health', 'habit', 'hobby', 'special'];

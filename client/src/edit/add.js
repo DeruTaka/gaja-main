@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { iso, addDays, esc, uid } from '../utils.js';
-import { getCat, catColor, priLocked } from '../categories.js';
+import { getCat, catColor, priLocked, ICON_CHOICES } from '../categories.js';
 import { getSchema } from '../schema.js';
 import { F, ROW } from '../ui/fields.js';
 import { buildDay, bump } from '../engine.js';
@@ -31,7 +31,7 @@ function openNewCategory(preset) {
   modal({
     title: 'New category',
     body: () => F(draft, { k: 'label', t: 'text', label: 'Name', ph: 'Volunteering, side project...' })
-      + ROW(F(draft, { k: 'icon', t: 'text', label: 'Icon', ph: '🎗️' }), F(draft, { k: 'color', t: 'color', label: 'Color' }))
+      + ROW(F(draft, { k: 'icon', t: 'select', label: 'Icon', opts: ICON_CHOICES }), F(draft, { k: 'color', t: 'color', label: 'Color' }))
       + F(draft, { k: 'pri', t: 'pri', label: 'Priority' }),
     foot: `<div class="spacer"></div><button class="btn" data-back>Back</button><button class="btn primary" data-save>Create</button>`,
   });

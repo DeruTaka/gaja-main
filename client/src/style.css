@@ -107,7 +107,7 @@ input[type=text],input[type=time],input[type=date],input[type=number],select,tex
 }
 input:hover,select:hover{border-color:var(--graphite-dim)}
 input:focus,select:focus,textarea:focus{outline:none;border-color:var(--cyan)}
-input[type=time],input[type=date]{color-scheme:dark}
+input[type=time],input[type=date],select{color-scheme:dark}
 .row{display:flex;gap:12px;flex-wrap:wrap}
 .row>*{flex:1;min-width:150px}
 .days{display:flex;gap:6px;flex-wrap:wrap}
