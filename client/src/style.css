@@ -157,11 +157,18 @@ input[type=time],input[type=date]{color-scheme:dark}
 .ev.dragging:hover{transform:none}
 .ev .etitle{font-weight:600;font-size:13.5px;line-height:1.25;letter-spacing:-.005em}
 .ev .etime{font-family:var(--mono);font-size:11px;color:var(--graphite);margin-top:2px}
-.ev .eico{font-size:14px;line-height:1.2;flex:none;background:none;border:none;padding:0;margin:0;
-  font-family:inherit;color:inherit;cursor:pointer;border-radius:4px;display:inline-block}
-.ev .eico:hover{background:rgba(255,255,255,.08)}
-.ev .eico.static{cursor:default}
-.ev .eico.static:hover{background:none}
+/* a task's icon doubles as its completion checkbox — it needs to read as one
+   at rest, not just on hover (which touch devices never see in the first
+   place), so it always carries a circular checkbox outline until it's done */
+.ev .eico{font-size:11px;line-height:1;flex:none;background:var(--panel-2);padding:0;margin-top:1px;
+  font-family:inherit;color:inherit;cursor:pointer;border-radius:50%;
+  width:19px;height:19px;display:grid;place-items:center;
+  border:1.5px solid var(--graphite-dim)}
+.ev .eico:hover{border-color:var(--chalk)}
+.ev .eico[aria-pressed="true"]{background:var(--lime);border-color:var(--lime);color:#0F1113;font-weight:700}
+.ev .eico.static{cursor:default;background:none;border:none;border-radius:4px;
+  width:auto;height:auto;font-size:14px;margin-top:0}
+.ev .eico.static:hover{background:none;border-color:transparent}
 .ev .ebody{flex:1;min-width:0}
 .ev .etitle,.ev .etime{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ev.short{padding:4px 11px;align-items:center}
