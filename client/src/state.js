@@ -25,4 +25,11 @@ export const blank = () => ({
   suggestionResponses: {}, priorityOverrides: [], capOverrides: [], created: TODAY,
 });
 
-export const save = () => store.set(KEY, state.S);
+/* every call site fires this without awaiting it (a save shouldn't block the
+   UI) — a failure is dispatched as a DOM event rather than thrown into the
+   void, so something can surface it without state.js needing to import the
+   toast/modal UI (which itself imports state.js — see ui/modal.js) */
+export const save = () => store.set(KEY, state.S).catch(err => {
+  console.error('save failed:', err);
+  document.dispatchEvent(new CustomEvent('gaja:save-error', { detail: err }));
+});
