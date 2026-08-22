@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { CAT, catColor, DOW, MON, filterHidden } from '../categories.js';
+import { getCat, catColor, DOW, MON, filterHidden } from '../categories.js';
 import { clock, dur, t2m, m2t, esc, TODAY, daysBetween } from '../utils.js';
 import { buildDay, getMark, studyMap, studyProgress } from '../engine.js';
 import { navbar, PPM } from './paint.js';
@@ -25,7 +25,7 @@ export function dayView(d) {
     return `<div class="ev ${done ? 'done' : ''} ${short ? 'short' : ''}" style="--c:${catColor(e.cat)};top:${top}px;height:${hgt}px"
       data-src="${e.src}" data-start="${m2t(e.start)}" data-end="${m2t(e.end)}" data-cat="${e.cat}" data-pri="${e.pri}" data-carved="${e.carved ? '1' : ''}"
       data-title="${esc(e.title)}" tabindex="0" role="button" aria-label="Edit ${esc(e.title)}">
-      <button class="eico" data-done="${e.src}" data-icon="${CAT[e.cat].icon}" aria-pressed="${!!done}" aria-label="${done ? 'Mark not done' : 'Mark done'}">${done ? '✓' : CAT[e.cat].icon}</button>
+      <button class="eico" data-done="${e.src}" data-icon="${getCat(e.cat).icon}" aria-pressed="${!!done}" aria-label="${done ? 'Mark not done' : 'Mark done'}">${done ? '✓' : getCat(e.cat).icon}</button>
       <div class="ebody">
         <div class="etitle">${esc(e.title)}${e.part ? ` <span class="mono" style="color:var(--graphite-dim);font-size:11px">${e.part}</span>` : ''}</div>
         <div class="etime">${clock(e.start)}–${clock(e.end)}${e.moved ? ' · moved' : ''}${
@@ -58,7 +58,7 @@ export function sidePanel(day, visible = day.events) {
   visible.forEach(e => { byCat[e.cat] = (byCat[e.cat] || 0) + (e.end - e.start); });
   const span = day.win.end - day.win.start;
   const load = Object.entries(byCat).sort((a, b) => b[1] - a[1]).map(([c, m]) =>
-    `<div class="stat"><span>${CAT[c].icon} ${CAT[c].label}</span><b>${dur(m)}</b></div>
+    `<div class="stat"><span>${getCat(c).icon} ${getCat(c).label}</span><b>${dur(m)}</b></div>
      <div class="bar" style="--c:${catColor(c)}"><i style="width:${(m / span * 100).toFixed(1)}%"></i></div>`).join('');
 
   const over = day.overload;
@@ -74,7 +74,7 @@ export function sidePanel(day, visible = day.events) {
     </div>` : '';
   const notes = day.conflicts.length ? `<div class="card"><h3>Adjustments <em>${day.conflicts.length}</em></h3>
     ${day.conflicts.map(c => `<div class="note ${c.kind === 'drop' || c.kind === 'clash' ? 'warn' : ''}"><b>${
-      CAT[c.item.cat].icon} ${esc(c.item.title)}</b>${esc(c.why)}</div>`).join('')}
+      getCat(c.item.cat).icon} ${esc(c.item.title)}</b>${esc(c.why)}</div>`).join('')}
     </div>` : '';
   const conf = banner + notes;
 

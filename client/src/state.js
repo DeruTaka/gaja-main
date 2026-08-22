@@ -20,8 +20,9 @@ export const state = {
 
 export const blank = () => ({
   profile: { name: '', place: '', hasPlace: false, wake: '07:00', sleep: '23:00',
-             meals: [], autoMeals: true, mealCount: 3, mealAtWork: true, hiddenCats: [] },
-  rules: [], goals: [], marks: {}, dismissed: {}, created: TODAY,
+             meals: [], autoMeals: true, mealCount: 3, mealAtWork: true, hiddenCats: [], adaptive: false },
+  rules: [], goals: [], marks: {}, dismissed: {}, customCats: [],
+  suggestionResponses: {}, priorityOverrides: [], capOverrides: [], created: TODAY,
 });
 
 export const save = () => store.set(KEY, state.S);

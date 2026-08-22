@@ -43,6 +43,10 @@ header.top{position:sticky;top:0;z-index:40;background:rgba(27,29,33,.92);backdr
 .seg button[aria-pressed="true"]{background:var(--cyan);color:#0F1113;font-weight:600}
 .iconbtn{width:34px;height:34px;border:1px solid var(--grat);border-radius:8px;display:grid;place-items:center;color:var(--graphite)}
 .iconbtn:hover{color:var(--chalk);border-color:var(--graphite-dim)}
+.iconbtn.bell{position:relative}
+.iconbtn.bell .badge{position:absolute;top:-6px;right:-6px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;
+  background:var(--red);color:#fff;font-style:normal;font-family:var(--mono);font-size:10px;font-weight:600;
+  display:grid;place-items:center;line-height:1}
 .btn{padding:8px 15px;border-radius:8px;border:1px solid var(--grat);font-size:14px;font-weight:500;color:var(--chalk);white-space:nowrap}
 .btn:hover{border-color:var(--graphite-dim);background:var(--panel)}
 .btn.primary{background:var(--cyan);color:#0F1113;border-color:var(--cyan);font-weight:600}

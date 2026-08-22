@@ -125,6 +125,17 @@ export function draftToItems(D) {
     goals.push({ id: uid(), kind: 'tournament', cat: 'tournament', title: e.title || 'Tournament', pri: Number(e.pri) || 2, deadline: e.deadline, startTime: e.startTime, len: Number(e.len) || 240, place: e.place });
     if ((e.days || []).length) rules.push({ id: uid(), cat: 'tournament', title: `${e.title || 'Team'} practice`, pri: Number(e.pri) || 2, repeat: 'weekly', days: e.days, start: e.start, end: e.end, until: e.deadline, place: e.place });
   });
+  // user-defined categories aren't fixed keys on D — newDraft() only knows the built-ins
+  // above, so a custom category's entries ride in on whatever extra key tryAdd() set
+  // (edit/add.js). Same shape/behavior as Hobbies: movable, weekly-repeating.
+  const BUILTIN_KEYS = new Set(['work', 'class', 'health', 'hobby', 'habit', 'special', 'assessment', 'tournament']);
+  for (const key of Object.keys(D)) {
+    if (BUILTIN_KEYS.has(key)) continue;
+    (D[key] || []).forEach(e => rules.push({
+      id: uid(), cat: key, title: e.title || 'Untitled', pri: Number(e.pri) || 4,
+      repeat: 'weekly', days: e.days || [], start: e.start, end: e.end,
+    }));
+  }
   return { rules, goals };
 }
 export function compile() {

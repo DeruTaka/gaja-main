@@ -19,6 +19,9 @@ export function F(o, d) { // d: {k,t,label,hint,ph,opts,min,max,step}
         value="${esc(v ?? '')}" placeholder="${esc(d.ph || '')}"
         ${d.min != null ? `min="${d.min}"` : ''} ${d.max != null ? `max="${d.max}"` : ''} ${d.step ? `step="${d.step}"` : ''}>`;
       break;
+    case 'color':
+      inner = `<input id="i${id}${d.k}" type="color" ${base} value="${esc(v || '#7C9CF5')}" style="height:40px;padding:4px;cursor:pointer">`;
+      break;
     case 'days':
       inner = `<div class="days" ${base} data-t="days">${DOW1.map((n, i) =>
         `<button type="button" data-day="${i}" aria-pressed="${(v || []).includes(i)}" title="${DOW[i]}">${n}</button>`).join('')}</div>`;

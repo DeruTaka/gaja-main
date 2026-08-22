@@ -1,5 +1,5 @@
 import { state } from './state.js';
-import { CAT } from './categories.js';
+import { getCat } from './categories.js';
 import { t2m, clock, dur, iso, parseISO, addDays, daysBetween, clamp, TODAY } from './utils.js';
 
 /* ============================================================
@@ -27,16 +27,28 @@ export function fires(rule, dstr, d) {
   }
 }
 
+/* an accepted adaptive suggestion that raises this week's study cap for a goal
+   (see adaptive.js) — separate from priorityOverrides, which only affects who
+   wins a slot when two things compete for the same time; this actually grants
+   more study minutes per day, which is the part that catches an exam back up */
+function effectiveCap(goal, dstr) {
+  let cap = (Number(goal.maxDaily) || 3) * 60;
+  for (const o of state.S.capOverrides || []) {
+    if (o.goalId === goal.id && dstr >= o.from && dstr <= o.until) cap += (Number(o.extraMinutes) || 0);
+  }
+  return cap;
+}
+
 /* --- assessments: minutes to study each day, with catch-up --- */
 export function studyMap(goal) {
   const hit = studyCache.get(goal.id);
   if (hit && hit.v === VERSION) return hit.map;
   const map = {}; let done = 0;
   const total = (Number(goal.hours) || 0) * 60;
-  const cap = (Number(goal.maxDaily) || 3) * 60;
   let d = goal.from > state.S.created ? goal.from : state.S.created;
   let guard = 0;
   while (d <= goal.deadline && guard++ < 800) {
+    const cap = effectiveCap(goal, d);
     const left = Math.max(0, total - done);
     const daysLeft = Math.max(1, daysBetween(d, goal.deadline)); // exam day itself is not a study day
     let target = left <= 0 ? 0 : clamp(Math.ceil(left / daysLeft / 5) * 5, 0, cap);
@@ -60,6 +72,16 @@ export function studyProgress(goal) {
   return { done, total, pct: total ? clamp(done / total, 0, 1) : 0 };
 }
 
+/* an accepted adaptive suggestion doesn't touch the rule directly — it just lowers
+   its effective priority for a date range, and the existing conflict-resolution
+   pass in layout() does the actual trimming/moving from there (see adaptive.js) */
+function effectivePri(rule, dstr) {
+  for (const o of state.S.priorityOverrides || []) {
+    if (o.ruleId === rule.id && dstr >= o.from && dstr <= o.until) return o.pri;
+  }
+  return rule.pri;
+}
+
 /* --- collect everything that wants a slot on this date --- */
 function candidates(dstr, win) {
   const d = parseISO(dstr), out = [];
@@ -69,7 +91,7 @@ function candidates(dstr, win) {
 
   for (const r of state.S.rules) {
     if (!fires(r, dstr, d)) continue;
-    const c = CAT[r.cat];
+    const c = getCat(r.cat);
     let start = t2m(r.start), end = t2m(r.end);
     if (end <= start) end += 1440; // crosses midnight
     const mk = getMark(dstr, r.id);
@@ -77,7 +99,7 @@ function candidates(dstr, win) {
     if (mk && mk.start) { const s = t2m(mk.start), e = t2m(mk.end); start = s; end = e > s ? e : e + 1440; }
     const padB = r.travelBefore || 0, padA = r.travelAfter || 0; // travel rides with the block
     push({
-      src: r.id, cat: r.cat, title: (mk && mk.title) || r.title, pri: r.pri,
+      src: r.id, cat: r.cat, title: (mk && mk.title) || r.title, pri: effectivePri(r, dstr),
       start: start - padB, end: end + padA, padB, padA,
       rigid: c.rigid, movable: !c.rigid, carve: r.cat === 'work' && !!r.mealBreak,
       split: c.split && !padB && !padA,

@@ -1,6 +1,7 @@
 import { clock, t2m, dur, iso, addDays } from './utils.js';
 import { F, ROW } from './ui/fields.js';
 import { travelFields, modeField, daysLabel } from './ui/forms.js';
+import { customCat } from './categories.js';
 
 /* ============================================================
    ENTRY SCHEMAS  (one shape per category)
@@ -94,3 +95,23 @@ export const SCHEMA = {
       + F(e, { k: 'pri', t: 'pri', label: 'Priority', hint: 'Set this above classes if the season outranks coursework this month.' }),
   },
 };
+
+/* one SCHEMA-shaped entry for any user-defined category — same field set as Hobbies
+   (title/days/start/end/priority), parameterized by the category's own label and
+   default priority. `cat` here is the {id,label,icon,color,pri} row from S.customCats. */
+function customCategorySchema(cat) {
+  return {
+    cat: cat.id, add: `Add to ${cat.label}`,
+    blank: () => ({ title: '', days: [1], start: '15:00', end: '16:00', pri: cat.pri || 4 }),
+    sum: e => `${daysLabel(e.days)} · ${clock(t2m(e.start))}–${clock(t2m(e.end))}`,
+    form: e => F(e, { k: 'title', t: 'text', label: cat.label, ph: 'What is this?' }) + F(e, { k: 'days', t: 'days', label: 'Days' })
+      + ROW(F(e, { k: 'start', t: 'time', label: 'Starts' }), F(e, { k: 'end', t: 'time', label: 'Ends' }))
+      + F(e, { k: 'pri', t: 'pri', label: 'Priority' }),
+  };
+}
+
+/* SCHEMA[key] plus a fallback for custom category keys, which aren't in the fixed
+   SCHEMA object — every former direct `SCHEMA[key]` lookup goes through this now. */
+export function getSchema(key) {
+  return SCHEMA[key] || customCategorySchema(customCat(key));
+}

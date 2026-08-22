@@ -7,6 +7,7 @@ import { openAdd } from './edit/add.js';
 import { openSettings } from './settings.js';
 import { openEdit } from './edit/source.js';
 import { wireDrag } from './edit/drag.js';
+import { openNotifications } from './ui/notifications.js';
 import { paint } from './views/paint.js';
 
 /* ---------- wiring ---------- */
@@ -43,6 +44,7 @@ export function wire() {
   const ab = document.getElementById('addBtn'); if (ab) ab.onclick = add;
   const fb = document.getElementById('fab'); if (fb) fb.onclick = add;
   const sb = document.getElementById('setBtn'); if (sb) sb.onclick = openSettings;
+  const nb = document.getElementById('notifBtn'); if (nb) nb.onclick = openNotifications;
   document.querySelectorAll('[data-day]').forEach(b => b.onclick = () => { state.cursor = b.dataset.day; state.view = 'day'; paint(); });
   document.querySelectorAll('[data-month]').forEach(b => b.onclick = () => { state.cursor = b.dataset.month; state.view = 'month'; paint(); });
 

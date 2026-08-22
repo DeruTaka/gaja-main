@@ -5,6 +5,7 @@ import { monthView } from './month.js';
 import { yearView } from './year.js';
 import { wire } from '../wire.js';
 import { categoryRail } from '../ui/categoryRail.js';
+import { pendingCount } from '../ui/notifications.js';
 
 export const PPM = () => innerWidth < 640 ? .85 : 1.05;
 
@@ -17,6 +18,8 @@ export function paint() {
     <div class="seg">${['day', 'month', 'year'].map(v =>
       `<button data-view="${v}" aria-pressed="${state.view === v}">${v}</button>`).join('')}</div>
     <button class="btn" id="addBtn">+ Add event</button>
+    <button class="iconbtn bell" id="notifBtn" title="Suggestions" aria-label="Suggestions">🔔${
+      pendingCount() ? `<i class="badge">${pendingCount()}</i>` : ''}</button>
     <button class="iconbtn" id="setBtn" title="Settings" aria-label="Settings">⚙</button>
   </div></div></header>`;
   const body = state.view === 'day' ? dayView(d) : state.view === 'month' ? monthView(d) : yearView(d);

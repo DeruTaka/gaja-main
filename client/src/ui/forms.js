@@ -1,8 +1,8 @@
 import { esc } from '../utils.js';
-import { CAT, catColor, DOW } from '../categories.js';
+import { getCat, catColor, DOW } from '../categories.js';
 import { state } from '../state.js';
 import { F, ROW } from './fields.js';
-import { SCHEMA } from '../schema.js';
+import { getSchema } from '../schema.js';
 
 /* travel block — location questions bend to what the profile knows */
 export function travelFields(o) {
@@ -27,7 +27,7 @@ export function daysLabel(ds) {
 
 /* collection editor used by both onboarding and the settings sheet */
 export function collection(key, list, opts = {}) {
-  const sc = SCHEMA[key], c = CAT[sc.cat];
+  const sc = getSchema(key), c = getCat(sc.cat);
   const rows = list.map((e, i) => {
     const open = e._open;
     return `<div class="entry">

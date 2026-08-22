@@ -1,7 +1,7 @@
 import { state } from '../state.js';
 import { m2t, t2m, clamp, clock } from '../utils.js';
 import { entryTravel } from '../travel.js';
-import { CAT } from '../categories.js';
+import { getCat } from '../categories.js';
 import { PPM, paint } from '../views/paint.js';
 import { buildDay, getMark, markKey } from '../engine.js';
 import { source } from './source.js';
@@ -40,7 +40,7 @@ function collectGroups(els) {
     const src = el.dataset.src;
     const pStart = t2m(el.dataset.start), pEnd = t2m(el.dataset.end);
     const pri = Number(el.dataset.pri) || 4;
-    const rigid = !!(CAT[el.dataset.cat] && CAT[el.dataset.cat].rigid);
+    const rigid = !!getCat(el.dataset.cat).rigid;
     const carved = el.dataset.carved === '1'; // e.g. a lunch break carved into a workday — its slot
     // is a placement artifact of the rigid block around it, not a timeframe of its own
     const piece = { el, start: pStart, end: pEnd, origTop: parseFloat(el.style.top) };
