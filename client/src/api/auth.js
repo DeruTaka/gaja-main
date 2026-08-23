@@ -1,11 +1,14 @@
 /* ---------- auth client ----------
-   Only talks to a backend when VITE_API_URL is configured — otherwise `enabled`
-   is false and the app never gates on sign-in at all (see auth/screen.js). */
-const API = import.meta.env.VITE_API_URL;
-export const enabled = !!API;
+   Only talks to a backend when VITE_USE_API is set — otherwise `enabled` is
+   false and the app never gates on sign-in at all (see auth/screen.js).
+   Requests are always relative (/api/...): in production this client is
+   served by the same Node process as the API (server/src/index.js), and in
+   local dev Vite's own proxy (vite.config.js) forwards /api/* to a locally
+   running server — either way it's same-origin, never a cross-site fetch. */
+export const enabled = import.meta.env.VITE_USE_API === 'true';
 
 async function req(path, opts = {}) {
-  const res = await fetch(`${API}${path}`, {
+  const res = await fetch(path, {
     credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     ...opts,

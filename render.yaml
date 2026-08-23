@@ -1,33 +1,24 @@
 services:
   - type: web
-    name: gaja-server
+    name: gaja
     runtime: node
     plan: free
-    rootDir: server
-    buildCommand: npm install
-    startCommand: npm start
+    # operates from the repo root (no rootDir) — the build needs to reach both
+    # client/ and server/, and the server serves the client's build output at
+    # runtime (server/src/index.js), so they have to ship as one service.
+    buildCommand: npm install && npm run build -w client
+    # the migration is idempotent (server/src/schema.sql uses "if not exists"),
+    # safe to run on every deploy rather than as a manual one-off step
+    startCommand: npm run migrate -w server && npm start -w server
     envVars:
       - key: DATABASE_URL
         sync: false
       - key: JWT_SECRET
         generateValue: true
-      # fill this in with gaja-client's onrender.com URL after the first deploy
-      # (both services get created together, but each needs the other's
-      # already-assigned URL, so this one blank can't be known up front)
-      - key: CLIENT_ORIGIN
-        sync: false
       - key: NODE_ENV
         value: production
-
-  - type: web
-    name: gaja-client
-    runtime: static
-    rootDir: client
-    buildCommand: npm install && npm run build
-    staticPublishPath: ./dist
-    envVars:
-      # fill this in with gaja-server's onrender.com URL after the first deploy,
-      # then trigger a manual redeploy of gaja-client — VITE_API_URL is baked in
-      # at build time, so just changing the env var alone doesn't take effect
-      - key: VITE_API_URL
-        sync: false
+      # baked into the client bundle at build time (Vite) — this is what turns
+      # on the sign-in gate and the backend-backed store instead of the local
+      # in-memory one; see client/src/api/{auth,store}.js
+      - key: VITE_USE_API
+        value: 'true'

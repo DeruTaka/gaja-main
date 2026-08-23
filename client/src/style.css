@@ -101,7 +101,7 @@ header.top{position:sticky;top:0;z-index:40;background:rgba(27,29,33,.92);backdr
 .field{margin-bottom:18px}
 .field>label,.flabel{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--graphite);margin-bottom:7px}
 .hint{font-size:13px;color:var(--graphite-dim);margin-top:6px}
-input[type=text],input[type=time],input[type=date],input[type=number],select,textarea{
+input[type=text],input[type=time],input[type=date],input[type=number],input[type=email],input[type=password],select,textarea{
   width:100%;background:var(--panel);border:1px solid var(--grat);border-radius:var(--r);
   padding:10px 12px;color:var(--chalk);font-family:var(--mono);font-size:14px;
 }

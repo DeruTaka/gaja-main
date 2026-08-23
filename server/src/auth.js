@@ -7,27 +7,19 @@ export const COOKIE_NAME = 'gaja_session';
 
 export const signToken = userId => jwt.sign({ sub: userId }, SECRET, { expiresIn: '30d' });
 
-export const cookieOpts = () => {
-  const prod = process.env.NODE_ENV === 'production';
-  return {
-    httpOnly: true,
-    // In production the client and server are two separate Render services on
-    // different subdomains (onrender.com is on the public suffix list, so
-    // gaja-client.onrender.com and gaja-server.onrender.com are different
-    // *sites*, not just different origins) — every /api/* fetch from the
-    // client is genuinely cross-site. A SameSite=Lax cookie is silently
-    // dropped by the browser on cross-site fetch/XHR (it only rides along on
-    // top-level navigations), so the session looked like it never existed
-    // past login: store.get()/me() would 401, and the client would treat that
-    // as "no saved plan" and re-run onboarding. SameSite=None (which requires
-    // Secure) is what actually lets the cookie travel with those requests.
-    // Local dev keeps 'lax' — client and server are same-site there (just
-    // different localhost ports), and 'lax' works fine without HTTPS.
-    secure: prod,
-    sameSite: prod ? 'none' : 'lax',
-    maxAge: 30 * 24 * 60 * 60 * 1000,
-  };
-};
+export const cookieOpts = () => ({
+  httpOnly: true,
+  // client and server are served by the same Node process now (server/src/index.js
+  // serves the built client) — every request is genuinely same-origin, so 'lax' is
+  // both correct and sufficient everywhere. (An earlier two-service split had the
+  // client and API on different Render subdomains — different *sites*, not just
+  // different origins — which made every /api/* fetch cross-site; Safari's ITP in
+  // particular would drop the session cookie on those regardless of SameSite value,
+  // which is what merging the services into one actually fixes, not a cookie flag.)
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'lax',
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+});
 
 export function requireAuth(req, res, next) {
   const token = req.cookies[COOKIE_NAME];
