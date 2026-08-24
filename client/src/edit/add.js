@@ -16,11 +16,13 @@ export function openAdd(preset) {
   modal({
     title: 'What kind of event?', body: `<div class="catgrid">${addableKeys().map(k =>
       `<button data-cat="${k}" style="--c:${catColor(k)}"><span>${getCat(k).icon}</span><b>${getCat(k).label}</b></button>`).join('')
-      }<button data-new-cat style="--c:var(--graphite-dim)"><span>➕</span><b>New category</b></button></div>`,
+      }<button data-new-cat style="--c:var(--graphite-dim)"><span>➕</span><b>New category</b></button><button data-import-ics style="--c:var(--graphite-dim)"><span>📥</span><b>Import .ics</b></button></div>`,
   });
   layer().querySelectorAll('[data-cat]').forEach(b => b.onclick = () => addForm(b.dataset.cat, preset));
   const newCatBtn = layer().querySelector('[data-new-cat]');
   if (newCatBtn) newCatBtn.onclick = () => openNewCategory(preset);
+  const icsBtn = layer().querySelector('[data-import-ics]');
+  if (icsBtn) icsBtn.onclick = async () => (await import('./icsImport.js')).openIcsImport(preset);
   if (preset && preset.cat) addForm(preset.cat, preset);
 }
 
